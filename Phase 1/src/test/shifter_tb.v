@@ -6,9 +6,12 @@ module shifter_tb ();
     wire signed [15:0]  out;
     
     integer i;
+    integer failed;
 
     initial 
     begin
+        failed = 0;
+
         for (i = 0; i < 100; i++)
             begin
                 {in, shift, mode} = $random;
@@ -25,13 +28,15 @@ module shifter_tb ();
                         if (in << shift !== out)
                             begin
                                 $display("[FAIL %b] %b << %d != %b", mode, in, shift, out);
+                                failed++;
                             end
                     end
                 else if (mode == 2'b01)
                     begin
                         if (in >>> shift !== out)
                             begin
-                                $display("[FAIL %b] %b >>> %d != %b", mode, in, shift, out);
+                                $display("[FAIL %b] %b >> %d != %b", mode, in, shift, out);
+                                failed++;
                             end
                     end
                 else if (mode == 2)
@@ -40,7 +45,7 @@ module shifter_tb ();
                     end
             end
         
-        $display("Done.");
+        $display("[TEST] Completed with %d failures", failed);
         #50 $finish;
     end
     
