@@ -2,7 +2,7 @@
 
 ## Phase 1
 
-Due Wednesday, October 10th at 11:59 pm
+Due Wednesday, October 17th at 11:59 pm
 
 ## Phase 2
 
