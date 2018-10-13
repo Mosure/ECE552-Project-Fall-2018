@@ -46,6 +46,7 @@ module cpu (clk, rst_n, hlt, pc);
 							.SrcData2(Rt));
 	
 	///// Assign imm_sgnext_shft1 here, using sign extender and shifter
+	assign imm_sgnext_shft1 = {{12{Instruction[3]}}, Instruction[3:0]}; //sign-extended offset for LW and SW
 	
 	assign ALUSrcMuxOut = (ALUSrc == 2'b00) ? Rt :										// ALUSrc MUX
 						  (ALUSrc == 2'b01) ? Instruction[3:0] :
