@@ -7,7 +7,7 @@ module PC_control(C, I, F, B, Breg, PC_in, PC_out);
 	output[15:0] PC_out;
 
 	wire[15:0] PC_inc, PC_branch;
-	reg branch;
+	reg takeBranch;
 	wire[9:0] I_shifted;
 
 	/*ccc
@@ -30,15 +30,15 @@ module PC_control(C, I, F, B, Breg, PC_in, PC_out);
 
 	always@(*) begin
 		case (C)
-			3'b000: branch = ~F[2]; 				//Not Equal
-			3'b001: branch = F[2];					//Equal
-			3'b010: branch = ~(F[2] | F[0]);		//Greater than
-			3'b011: branch = ~F[0];					//Less than
-			3'b100: branch = F[2] | ~(F[2] | F[0]);	//Greater than or Equal
-			3'b101: branch = F[0] | ~(F[2] | F[0]); //Less than or Equal
-			3'b110: branch = F[1];					//Overflow
-			3'b111: branch = 1'b1;					//Unconditional
-			default: begin branch = 1'b0; $display("Error, PC_control default case was selected"); end
+			3'b000: takeBranch = ~F[2]; 				//Not Equal
+			3'b001: takeBranch = F[2];					//Equal
+			3'b010: takeBranch = ~(F[2] | F[0]);		//Greater than
+			3'b011: takeBranch = ~F[0];					//Less than
+			3'b100: takeBranch = F[2] | ~(F[2] | F[0]);	//Greater than or Equal
+			3'b101: takeBranch = F[0] | ~(F[2] | F[0]); //Less than or Equal
+			3'b110: takeBranch = F[1];					//Overflow
+			3'b111: takeBranch = 1'b1;					//Unconditional
+			default: begin takeBranch = 1'b0; $display("Error, PC_control default case was selected"); end
 		endcase
 	end
 
@@ -52,6 +52,6 @@ module PC_control(C, I, F, B, Breg, PC_in, PC_out);
 	CLA_16bit	branchPC(.a(PC_inc), .b({6'h00, I_shifted}), .cin(1'b0), .sum(PC_branch), .cout(), .finalcin());
 
 	//Select which new PC option to use
-	assign PC_out = (B[1] & branch) ? ((B[0]) ? Breg : PC_branch) : PC_inc;
+	assign PC_out = (B[1] & takeBranch) ? ((B[0]) ? Breg : PC_branch) : PC_inc;
 						   
 endmodule
