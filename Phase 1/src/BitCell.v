@@ -3,7 +3,7 @@ ReadEnable2, inout Bitline1, inout Bitline2);
 
 wire Q;
 
-dff iDFF(.clk(clk), .rst(rst), .wen(WriteEnable), .q(Q), .D(D));
+dff iDFF(.clk(clk), .rst(rst), .wen(WriteEnable), .q(Q), .d(D));
 
 assign Bitline1 = clk ? 1'bz :
 				  (ReadEnable1) ? Q : 1'bz;

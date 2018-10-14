@@ -3,10 +3,10 @@ DstReg, input WriteReg, input [15:0] DstData, inout [15:0] SrcData1, inout [15:0
 
 wire [15:0] RWL1, RWL2, WWL; 
 
-ReadDecoder_4_16 RD1(.RegID(SrcReg1), .Wordline(RWL1));
-ReadDecoder_4_16 RD2(.RegID(SrcReg2), .Wordline(RWL2));
+ReadDecoder_4_16 RD1(.RegId(SrcReg1), .Wordline(RWL1));
+ReadDecoder_4_16 RD2(.RegId(SrcReg2), .Wordline(RWL2));
 
-WriteDecoder_4_16 WD(.RegID(DstReg), .WriteReg(WriteReg), .Wordline(WWL));
+WriteDecoder_4_16 WD(.RegId(DstReg), .WriteReg(WriteReg), .Wordline(WWL));
 
 Register R0(.clk(clk),
 			.rst(rst),
