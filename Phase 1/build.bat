@@ -29,4 +29,8 @@ echo Building CPU...
 iverilog -o ./bin/cpu ./src/ReadDecoder_4_16.v ./src/WriteDecoder_4_16.v ./src/D-Flip-Flop.v ./src/BitCell.v ./src/Register.v^
             ./src/Control.v ./src/PC_control.v ./src/RegisterFile.v ./src/shifter.v ./src/alu.v ./src/memory.v ./src/cpu.v
 
+echo Building Phase 1 Testbench...
+iverilog -o ./bin/test/phase1_tb ./src/ReadDecoder_4_16.v ./src/WriteDecoder_4_16.v ./src/D-Flip-Flop.v ./src/BitCell.v ./src/Register.v^
+            ./src/Control.v ./src/PC_control.v ./src/RegisterFile.v ./src/shifter.v ./src/alu.v ./src/memory.v ./src/cpu.v ./project-phase1-testbench/project-phase1-testbench.v
+
 echo Done.
