@@ -41,11 +41,11 @@ module PC_control_tb();
 			#5;
 			if(exPC_out != PC_out) begin
 				$display("Error. PC_in = %h, Branch_GO = %h, Breg = %h, Branch = %b, exPC_out = %h, PC_out = %h", PC_in, Branch_GO, Breg, Branch, exPC_out, PC_out);
-				$stop;
+				#50 $finish;
 			end
 		end
 		$display("Tests passed with no errors");
-		$stop;
+		#50 $finish;
 	end
 
 endmodule

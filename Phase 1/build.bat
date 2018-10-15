@@ -28,8 +28,8 @@ iverilog -o ./bin/control ./src/Control.v
 echo.
 
 echo Building PC Control...
-iverilog -o ./bin/pc_control ./src/PC_control.v
-iverilog -o ./bin/test/pc_control_tb ./src/PC_control.v ./src/test/PC_Control_tb.v
+iverilog -o ./bin/pc_control ./src/shifter.v ./src/alu.v ./src/PC_control.v
+iverilog -o ./bin/test/pc_control_tb ./src/shifter.v ./src/alu.v ./src/PC_control.v ./src/test/PC_Control_tb.v
 echo.
 
 echo Building CPU...
