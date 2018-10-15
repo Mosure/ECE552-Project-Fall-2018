@@ -43,13 +43,13 @@ module PC_control(C, I, F, B, Breg, PC_in, PC_out);
 	end
 
 	//Increment the PC
-	CLA_16bit	incPC(.a(PC_in), .b(16'h0002), .cin(1'b0), .sum(PC_inc), .cout(), .finalcin());
+	adder_16bit	incPC(.a(PC_in), .b(16'h0002), .cin(1'b0), .sum(PC_inc), .cout(), .finalcin());
 	
 	//Shift the immediate
 	assign I_shifted = I << 1;
 
 	//Add the immediate
-	CLA_16bit	branchPC(.a(PC_inc), .b({6'h00, I_shifted}), .cin(1'b0), .sum(PC_branch), .cout(), .finalcin());
+	adder_16bit	branchPC(.a(PC_inc), .b({6'h00, I_shifted}), .cin(1'b0), .sum(PC_branch), .cout(), .finalcin());
 
 	//Select which new PC option to use
 	assign PC_out = (B[1] & branch) ? ((B[0]) ? Breg : PC_branch) : PC_inc;
