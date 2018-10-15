@@ -192,12 +192,12 @@ output s);
 
 wire  p,q,r;
 
-	xor (p,b,a);
-	xor (s,p,cin);
+	assign p = b ^ a;
+	assign s = p ^ cin;
  
-	and(q,p,cin);
-	and(r,a,b);
-	or(cout,r,q);
+	assign q = p & cin;
+	assign r = a & b;
+	assign cout = r | q;
 
 endmodule
 
@@ -226,7 +226,7 @@ assign Cout = G[3] | (P[3] & C[3]);
 
 assign S = P ^ C;
 
-xor(Ovfl,C[3],Cout);
+assign Ovfl = C[3] ^ Cout;
 
 assign Sum = Ovfl?(B[3]?4'b1000:4'b0111):S;
 
@@ -257,7 +257,7 @@ assign Cout = G[3] | (P[3] & C[3]);
 
 assign S = P ^ C;
    
-xor(Ovfl,C[3],Cout);
+assign Ovfl = C[3] ^ Cout;
 
 assign Sum = Ovfl?(B[3]?4'b1000:4'b0111):S;
 
