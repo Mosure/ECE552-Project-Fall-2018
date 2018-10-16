@@ -1,10 +1,10 @@
 
-module alu(op1,op2,aluop,Z,N,V,alu_out);
+module alu(op1,op2,aluop,Flag,alu_out);
 input [15:0] op1;
 input [15:0] op2;
 input [3:0] aluop;
 output [15:0] alu_out;
-output Z,N,V;
+output [2:0] Flag;
 
 wire [15:0] out0;
 wire [15:0] out1;
@@ -74,9 +74,9 @@ paddsb_4bit paddsb3( .A(op1[15:12]),
 assign out8 = (op1[15:0] & 16'hFF00) | op2[7:0];
 assign out9 = (op1[15:0] & 16'h00FF) | (op2[7:0] << 8);
 
-assign Z = ~(alu_out[15] | alu_out[14] | alu_out[13] | alu_out[12] |  alu_out[11] | alu_out[10] | alu_out[9] | alu_out[8] |  alu_out[7] | alu_out[6] | alu_out[5] | alu_out[4] |  alu_out[3] | alu_out[2] | alu_out[1] | alu_out[0]);
-assign N = (aluop == 3'b000)? out0[15]: (aluop == 3'b001)? out1[15]: N;
-assign V = (aluop == 3'b000)? Ovfl1: (aluop == 3'b001)? Ovfl0: V;
+assign Flag[2] = ~(|alu_out);			//Z Flag
+assign Flag[1] = (aluop[0]) ? Ovfl1 : Ovfl0;	//V Flag
+assign Flag[0] = alu_out[15];			//N Flag
 
 wire [9:0] in0,in1,in2,in3,in4,in5,in6,in7,in8,in9,in10,in11,in12,in13,in14,in15;
 
