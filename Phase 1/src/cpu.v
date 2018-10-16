@@ -6,14 +6,14 @@ module cpu (clk, rst_n, hlt, pc);
     output reg[15:0]  pc;
 	
 	wire[15:0] next_pc, Instruction;
-	wire RegRead, RegWrite, MemWrite;
+	wire RegRead, RegWrite, MemWrite, zEn, vEn, nEn;
 	wire[1:0] ALUSrc, Branch, WriteSelect;
 	wire[3:0] ALUOp;
 	wire[3:0] RegReadMuxOut;
 	wire[15:0] Rs, Rt;
 	wire[15:0] WriteSelectMuxOut, ALUSrcMuxOut;
 	wire[15:0] imm_sgnext_shft1;
-	wire[2:0] Flag;
+	wire[2:0] Flag, FlagIn;
 	wire[15:0] ALUOut, DMemOut;
 	
 	PCregister PC(.clk(clk), .rst(~rst_n), .wen(~hlt), .nextPC(next_pc), PC(pc));											// Halt Mux
@@ -48,10 +48,10 @@ module cpu (clk, rst_n, hlt, pc);
 	alu iALU(.op1(Rs),																	// ALU
 			 .op2(ALUSrcMuxOut),
 			 .aluop(ALUOp),
-			 .Z(Flag[2]),
-			 .V(Flag[1]),
-			 .N(Flag[0]),
+			 .Flag(FlagIn),
 			 .alu_out(ALUOut));
+	
+	FlagRegisters flags(.clk(clk), .rst(~rst_n), .FlagIn(FlagIn), .zEn(zEn), .vEn(vEn), .nEn(nEn), .FlagOut(Flag));
 	
 	memory1c DMEM(.data_in(Rt),								 							// Data Memory
 					.data_out(DMemOut), 
@@ -81,6 +81,9 @@ module cpu (clk, rst_n, hlt, pc);
 						  .ALUSrc(ALUSrc),
 						  .Branch(Branch),
 						  .WriteSelect(WriteSelect),
-						  .ALUOp(ALUOp));
+						  .ALUOp(ALUOp)
+			      .zEn(zEn),
+			      .vEn(vEn),
+			      .nEn(nEn));
 	
 endmodule
