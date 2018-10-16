@@ -5,8 +5,8 @@ module cpu (clk, rst_n, hlt, pc);
     output          hlt;
     output reg[15:0]  pc;
 	
-	wire[15:0] next_pc, Instruction, PCC_Out;
-	wire RegRead, RegWrite, MemRead, MemWrite;
+	wire[15:0] next_pc, Instruction;
+	wire RegRead, RegWrite, MemWrite;
 	wire[1:0] ALUSrc, Branch, WriteSelect;
 	wire[3:0] ALUOp;
 	wire[3:0] RegReadMuxOut;
@@ -16,14 +16,7 @@ module cpu (clk, rst_n, hlt, pc);
 	wire[2:0] Flag;
 	wire[15:0] ALUOut, DMemOut;
 	
-	always@(posedge clk) begin															// PC Register with sync reset
-		if(!rst_n)																		// Check the reset condition!	
-			pc <= 16'h0000;
-		else
-			pc <= next_pc;
-	end
-	
-	assign next_pc = (hlt) ? pc : PCC_Out;												// Halt Mux
+	PCregister PC(.clk(clk), .rst(~rst_n), .wen(~hlt), .nextPC(next_pc), PC(pc));											// Halt Mux
 
 	memory1c IMEM(.data_in(16'hzzzz),								 					// Instruction Memory
 					.data_out(Instruction), 
@@ -63,7 +56,7 @@ module cpu (clk, rst_n, hlt, pc);
 	memory1c DMEM(.data_in(Rt),								 							// Data Memory
 					.data_out(DMemOut), 
 					.addr(ALUOut), 
-					.enable(MemRead), 													// Check the working of enable and wr inputs!
+		     			.enable(1'b1), 													// Check the working of enable and wr inputs!
 					.wr(MemWrite), 														// 11 --> Write
 					.clk(clk), 															// 10 --> Read
 					.rst(~rst_n));
@@ -74,16 +67,15 @@ module cpu (clk, rst_n, hlt, pc);
 				   .B(Branch),
 				   .Breg(Rs),
 				   .PC_in(pc),
-				   .PC_out(PCC_Out));
+		       		   .PC_out(next_pc));
 	
 	assign WriteSelectMuxOut = (WriteSelect == 2'b00) ? ALUOut :						// Write Select MUX 
 							   (WriteSelect == 2'b01) ? DMemOut :
-							   (WriteSelect == 2'b10) ? PCC_Out : 16'h0000;  
+							   (WriteSelect == 2'b10) ? next_pc : 16'h0000;  
 	
 	Control GlobalControl(.Op(Instruction[15:12]),										// Global Control Logic
 						  .RegRead(RegRead),
 						  .RegWrite(RegWrite),
-						  .MemRead(MemRead),
 						  .MemWrite(MemWrite),
 						  .halt(hlt),
 						  .ALUSrc(ALUSrc),
