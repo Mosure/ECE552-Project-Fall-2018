@@ -5,9 +5,7 @@ wire Q;
 
 dff iDFF(.clk(clk), .rst(rst), .wen(WriteEnable), .q(Q), .d(D));
 
-assign Bitline1 = clk ? 1'bz :
-				  (ReadEnable1) ? Q : 1'bz;
-assign Bitline2 = clk ? 1'bz :
-				  (ReadEnable2) ? Q : 1'bz;
+assign Bitline1 = (ReadEnable1) ? Q : 1'bz;
+assign Bitline2 = (ReadEnable2) ? Q : 1'bz;
 
 endmodule
