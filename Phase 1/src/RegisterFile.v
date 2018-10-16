@@ -8,9 +8,10 @@ ReadDecoder_4_16 RD2(.RegId(SrcReg2), .Wordline(RWL2));
 
 WriteDecoder_4_16 WD(.RegId(DstReg), .WriteReg(WriteReg), .Wordline(WWL));
 
+//R0 hardwired to 0000
 Register R0(.clk(clk),
 			.rst(rst),
-			.D(DstData),
+			.D(16'h0000),
 			.WriteReg(WWL[0]),
 			.ReadEnable1(RWL1[0]),
 			.ReadEnable2(RWL2[0]),
