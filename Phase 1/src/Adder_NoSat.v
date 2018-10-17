@@ -1,6 +1,6 @@
 module Adder_NoSat(a, b, sum);
 	input[15:0] a, b;
-	input[15:0] sum;
+	output[15:0] sum;
 
 	wire [3:0] G;
 	wire [3:0] P;
