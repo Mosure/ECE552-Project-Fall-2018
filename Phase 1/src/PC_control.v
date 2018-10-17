@@ -8,7 +8,7 @@ module PC_control(C, I, F, B, Breg, PC_in, PC_out);
 
 	wire[15:0] PC_inc, PC_branch;
 	wire takeBranch;
-	wire[9:0] I_shifted;
+	wire[15:0] I_shifted;
 
 	/*ccc
 	000 not equal 0xx
