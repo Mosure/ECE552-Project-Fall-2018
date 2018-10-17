@@ -21,15 +21,15 @@ module PC_control_tb();
 			Branch = $random;
 			
 			PC_inc = PC_in + 2;
-			PC_branch = PC_in + 2 + (immediate << 1);
+			PC_branch = PC_in + 2 + {{6{immediate[8]}}, immediate, 1'b0};
 			if((CC == 3'b000 & Flags[2] == 1'b0) |
 			   (CC == 3'b001 & Flags[2] == 1'b1) |
 			   (CC == 3'b010 & Flags == 3'b0x0) |
 			   (CC == 3'b011 & Flags[0] == 1'b0) |
-			   (CC == 3'b100 & (Flags[2] == 1'b1) | (Flags[2] == 1'b0 & Flags[0] == 1'b0)) |
+			   (CC == 3'b100 & ((Flags[2] == 1'b1) | (Flags[2] == 1'b0 & Flags[0] == 1'b0))) |
 			   (CC == 3'b101 & (Flags[0] == 1'b1 | Flags[2] == 1'b1)) |
 			   (CC == 3'b110 & Flags[1] == 1'b1) |
-			   (CC == 3'b111) | 1'b0)
+			   (CC == 3'b111))
 				Branch_GO = 1'b1;
 			else Branch_GO = 1'b0;
 
@@ -41,11 +41,11 @@ module PC_control_tb();
 			#5;
 			if(exPC_out != PC_out) begin
 				$display("Error. PC_in = %h, Branch_GO = %h, Breg = %h, Branch = %b, exPC_out = %h, PC_out = %h", PC_in, Branch_GO, Breg, Branch, exPC_out, PC_out);
-				#50 $finish;
+				$stop;
 			end
 		end
 		$display("Tests passed with no errors");
-		#50 $finish;
+		$stop;
 	end
 
 endmodule
