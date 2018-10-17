@@ -132,7 +132,7 @@ end
 
 initial
 begin
-$monitor("time = %2d, A =%4h, B=%4h, Aluop=%4b, Result=%4h, Z=%1b, N=%1b, V=%1b ", $time,op1,op2, aluop,alu_out,Z,N,V);
+$monitor("time = %2d, A =%d, B=%d, Aluop=%4b, Result=%d, Z=%1b, N=%1b, V=%1b ", $time,op1,op2, aluop,alu_out,Z,N,V);
 end
  
 endmodule
