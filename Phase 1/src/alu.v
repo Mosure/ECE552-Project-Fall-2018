@@ -326,7 +326,7 @@ cla_adder_4bit a2(
 .Gen(G1[1])
 );
 
-assign C1[1] = G1[1] | (P1[1] & C1[1]);
+assign C1[1] = G1[1] | (P1[1] & C1[0]);
 
 cla_adder_4bit a3(
 .A(A[11:8]),
@@ -348,7 +348,7 @@ cla_adder_4bit a4(
 .Gen(G2[1])
 );
 
-assign C2[1] = G2[1] | (P2[1] & C2[1]);
+assign C2[1] = G2[1] | (P2[1] & C2[0]);
 
 assign ex1 = {3'b000, C1[1], S1};
 assign ex2 = {3'b000, C2[1], S2};
@@ -373,7 +373,7 @@ cla_adder_4bit a6(
 .Gen(G3[1])
 );
 
-assign C3[1] = G3[1] | (P3[1] & C3[1]);
+assign C3[1] = G3[1] | (P3[1] & C3[0]);
 
 cla_adder_4bit a7(
 .A(ex1[11:8]),
@@ -383,9 +383,9 @@ cla_adder_4bit a7(
 .Prop(P3[2]),
 .Gen(G3[2])
 );
-assign C3[2] = G3[2] | (P3[2] & C3[2]);
+assign C3[2] = G3[2] | (P3[2] & C3[1]);
 
-assign Sum = $signed(S3[9:0]);
+assign Sum = {4{C3[2]},S3};
 
 
 endmodule
@@ -423,7 +423,7 @@ cla_adder_4bit a1(
 .Gen(G[1])
 );
 
-assign C[1] = G[1] | (P[1] & C[1]);
+assign C[1] = G[1] | (P[1] & C[0]);
 
 cla_adder_4bit a2(
 .A(A[11:8]),
@@ -433,7 +433,7 @@ cla_adder_4bit a2(
 .Prop(P[2]),
 .Gen(G[2])
 );
-assign C[2] = G[2] | (P[2] & C[2]);
+assign C[2] = G[2] | (P[2] & C[1]);
 
 cla_adder_4bit a3(
 .A(A[15:12]),
@@ -443,7 +443,7 @@ cla_adder_4bit a3(
 .Prop(P[3]),
 .Gen(G[3])
 );
-assign C[3] = G[3] | (P[3] & C[3]);
+assign C[3] = G[3] | (P[3] & C[2]);
 
 assign Ovfl = (A[15] ^ B[15]) ? 1'b0 : (A[15] ^ S[15])? 1'b1: 1'b0;
 
@@ -478,7 +478,7 @@ cla_adder_4bit a0(
 .Gen(G[0])
 );
 
-assign C[0] = G[0] | (P[0] & 1'b0);
+assign C[0] = G[0] | (P[0] & 1'b1);
 
 cla_adder_4bit a1(
 .A(A[7:4]),
@@ -489,7 +489,7 @@ cla_adder_4bit a1(
 .Gen(G[1])
 );
 
-assign C[1] = G[1] | (P[1] & C[1]);
+assign C[1] = G[1] | (P[1] & C[0]);
 
 cla_adder_4bit a2(
 .A(A[11:8]),
@@ -499,7 +499,7 @@ cla_adder_4bit a2(
 .Prop(P[2]),
 .Gen(G[2])
 );
-assign C[2] = G[2] | (P[2] & C[2]);
+assign C[2] = G[2] | (P[2] & C[1]);
 
 cla_adder_4bit a3(
 .A(A[15:12]),
@@ -509,14 +509,15 @@ cla_adder_4bit a3(
 .Prop(P[3]),
 .Gen(G[3])
 );
-assign C[3] = G[3] | (P[3] & C[3]);
+assign C[3] = G[3] | (P[3] & C[2]);
 
 assign Ovfl = (A[15] ^ B[15]) ? 1'b0 : (A[15] ^ S[15])? 1'b1: 1'b0;
 
 assign Sum = Ovfl?(B[15]?16'b1000000000000000:16'b0111111111111111):S;
 
-
 endmodule
+
+////////////////////////////////
 
 module mux_10_1(
     input [9:0] in,
