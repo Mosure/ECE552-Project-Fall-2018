@@ -29,7 +29,7 @@ module PC_control(C, I, F, B, Breg, PC_in, PC_out);
 	*/
 
 	always@(*) begin
-		case (C)
+		casex (C)
 			3'b000: takeBranch = ~F[2]; 				//Not Equal
 			3'b001: takeBranch = F[2];					//Equal
 			3'b010: takeBranch = ~(F[2] | F[0]);		//Greater than
