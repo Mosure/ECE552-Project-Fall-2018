@@ -17,7 +17,7 @@ assign Branch[1] = Op[3] & Op[2] & ~Op[1];
 assign WriteSelect[0] = Op[3] & ~Op[1];
 assign WriteSelect[1] = Op[3] & Op[2];
 assign MemWrite = Op[3] & ~Op[2] & ~Op[1] & Op[0];
-assign zEn = ~Op[3];
+assign zEn = (~Op[3] & ~Op[1])|(~Op[3] & ~Op[0]);
 assign vEn = ~|Op[3:1];
 assign nEn = ~|Op[3:1];
 
