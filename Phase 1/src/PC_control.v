@@ -43,13 +43,13 @@ module PC_control(C, I, F, B, Breg, PC_in, PC_out);
 	end
 
 	//Increment the PC
-	adder_16bit	incPC(.A(PC_in), .B(16'h0002), .Sum(PC_inc), .Ovfl());
+	Adder_NoSat	incPC(.a(PC_in), .b(16'h0002), .sum(PC_inc));
 	
 	//Shift the immediate
 	assign I_shifted = {{6{I[8]}}, I, 1'b0};
 
 	//Add the immediate
-	adder_16bit	branchPC(.A(PC_inc), .B({I_shifted}), .Sum(PC_branch), .Ovfl());
+	Adder_NoSat	branchPC(.a(PC_inc), .b({I_shifted}), .sum(PC_branch));
 
 	//Select which new PC option to use
 	assign PC_out = (B[1] & takeBranch) ? ((B[0]) ? Breg : PC_branch) : PC_inc;
