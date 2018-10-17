@@ -19,7 +19,10 @@ module alu_tb ();
 
                 #1;
 
-                if (alu_op == 4'b0000)
+                // This needs saturation added to all alu_op's that have saturation outputs
+                // Needs ROR correctness condition
+
+                if (alu_op == 4'b0000) // Add
                     begin
                         if (op1 + op2 !== out)
                             begin
@@ -27,7 +30,7 @@ module alu_tb ();
                                 failed++;
                             end
                     end
-                else if (alu_op == 4'b0001)
+                else if (alu_op == 4'b0001) // Sub
                     begin
                         if (op1 - op2 !== out)
                             begin
@@ -35,7 +38,7 @@ module alu_tb ();
                                 failed++;
                             end
                     end
-                else if (alu_op == 4'b0010)
+                else if (alu_op == 4'b0010) // Xor
                     begin
                         if (op1 ^ op2 !== out)
                             begin
@@ -43,7 +46,7 @@ module alu_tb ();
                                 failed++;
                             end
                     end
-                else if (alu_op == 4'b0011)
+                else if (alu_op == 4'b0011) // Red
                     begin
                         if (op1[15:8] + op2[15:8] + op1[7:0] + op2[7:0] != out)
                             begin
@@ -51,7 +54,7 @@ module alu_tb ();
                                 failed++;
                             end
                     end
-                else if (alu_op == 4'b0100)
+                else if (alu_op == 4'b0100) // Sll
                     begin
                         if (op1 << op2 != out)
                             begin
@@ -59,7 +62,7 @@ module alu_tb ();
                                 failed++;
                             end
                     end
-                else if (alu_op == 4'b0101)
+                else if (alu_op == 4'b0101) // Sra
                     begin
                         if (op1 >> op2 != out)
                             begin
@@ -67,11 +70,11 @@ module alu_tb ();
                                 failed++;
                             end
                     end
-                else if (alu_op == 4'b0110)
+                else if (alu_op == 4'b0110) // Ror
                     begin
                         
                     end
-                else if (alu_op == 4'b0111)
+                else if (alu_op == 4'b0111) // Paddsb
                     begin
                         if (op1[15:12] + op2[15:12] != out[15:12] || op1[11:8] + op2[11:8] != out[11:8] || op1[7:4] + op2[7:4] != out[7:4] || op1[3:0] + op2[3:0] != out[3:0])
                             begin
@@ -79,7 +82,7 @@ module alu_tb ();
                                 failed++;
                             end
                     end
-                else if (alu_op == 4'b1000)
+                else if (alu_op == 4'b1000) // Llb
                     begin
                         if ({op1[15:8], op2[7:0]} != out)
                             begin
@@ -87,7 +90,7 @@ module alu_tb ();
                                 failed++;
                             end
                     end
-                else if (alu_op == 4'b1001)
+                else if (alu_op == 4'b1001) // Lhb
                     begin
                         if ({op2[15:8], op1[7:0]} != out)
                             begin
