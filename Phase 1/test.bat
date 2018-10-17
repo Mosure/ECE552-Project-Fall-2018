@@ -5,7 +5,6 @@ for %%f in (./bin/test/*) do (
     echo.
 )
 
-
 echo Running test1.list...
 perl ../WISC-assembler/assembler.pl ./project-phase1-testcases/test1.list > ./project-phase1-testcases/loadfile_all.img
 vvp ./project-phase1-testbench/phase1_tb
