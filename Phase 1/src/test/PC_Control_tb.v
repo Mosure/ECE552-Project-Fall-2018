@@ -27,9 +27,9 @@ module PC_control_tb();
 			   (CC == 3'b010 & Flags == 3'b0x0) |
 			   (CC == 3'b011 & Flags[0] == 1'b0) |
 			   (CC == 3'b100 & (Flags[2] == 1'b1) | (Flags[2] == 1'b0 & Flags[0] == 1'b0)) |
-			   (CC == 3'b101 & (Flags[0] == 1'b1) | (Flags[2] == 1'b0 & Flags[0] == 1'b0)) |
+			   (CC == 3'b101 & (Flags[0] == 1'b1 | Flags[2] == 1'b1)) |
 			   (CC == 3'b110 & Flags[1] == 1'b1) |
-			   (CC == 3'b111))
+			   (CC == 3'b111) | 1'b0)
 				Branch_GO = 1'b1;
 			else Branch_GO = 1'b0;
 

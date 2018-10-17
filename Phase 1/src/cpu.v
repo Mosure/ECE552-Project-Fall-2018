@@ -4,7 +4,7 @@ module cpu (clk, rst_n, hlt, pc);
 
     output          hlt;
     output  [15:0]  pc;
-	
+
 	wire[15:0] next_pc, Instruction;
 	wire RegRead, RegWrite, MemWrite, zEn, vEn, nEn;
 	wire[1:0] ALUSrc, Branch, WriteSelect;
@@ -15,7 +15,7 @@ module cpu (clk, rst_n, hlt, pc);
 	wire[15:0] imm_sgnext_shft1;
 	wire[2:0] Flag, FlagIn;
 	wire[15:0] ALUOut, DMemOut;
-	
+
 	PCregister PC(.clk(clk), .rst(~rst_n), .wen(~hlt), .nextPC(next_pc), .PC(pc));											// Halt Mux
 
 	memory1c IMEM(.data_in(16'hzzzz),								 					// Instruction Memory
@@ -25,9 +25,9 @@ module cpu (clk, rst_n, hlt, pc);
 					.wr(1'b0), 
 					.clk(clk), 
 					.rst(~rst_n));
-	
+
 	assign RegReadMuxOut = (RegRead) ? Instruction[11:8] : Instruction[7:4];
-	
+
 	RegisterFile registers(.clk(clk),													// Registers 
 							.rst(~rst_n), 
 							.SrcReg1(RegReadMuxOut), 
@@ -44,7 +44,7 @@ module cpu (clk, rst_n, hlt, pc);
 	assign ALUSrcMuxOut = (ALUSrc == 2'b00) ? Rt :										// ALUSrc MUX
 						  (ALUSrc == 2'b01) ? Instruction[3:0] :
 						  (ALUSrc == 2'b10) ? imm_sgnext_shft1 : Instruction[7:0];
-						  
+	
 	alu iALU(.op1(Rs),																	// ALU
 			 .op2(ALUSrcMuxOut),
 			 .aluop(ALUOp),
@@ -56,7 +56,7 @@ module cpu (clk, rst_n, hlt, pc);
 	memory1c DMEM(.data_in(Rt),								 							// Data Memory
 					.data_out(DMemOut), 
 					.addr(ALUOut), 
-		     			.enable(1'b1), 													// Check the working of enable and wr inputs!
+		     		.enable(1'b1), 														// Check the working of enable and wr inputs!
 					.wr(MemWrite), 														// 11 --> Write
 					.clk(clk), 															// 10 --> Read
 					.rst(~rst_n));
@@ -67,7 +67,7 @@ module cpu (clk, rst_n, hlt, pc);
 				   .B(Branch),
 				   .Breg(Rs),
 				   .PC_in(pc),
-		       		   .PC_out(next_pc));
+		       	   .PC_out(next_pc));
 	
 	assign WriteSelectMuxOut = (WriteSelect == 2'b00) ? ALUOut :						// Write Select MUX 
 							   (WriteSelect == 2'b01) ? DMemOut :
@@ -85,5 +85,4 @@ module cpu (clk, rst_n, hlt, pc);
 						  .zEn(zEn),
 						  .vEn(vEn),
 						  .nEn(nEn));
-	
 endmodule
