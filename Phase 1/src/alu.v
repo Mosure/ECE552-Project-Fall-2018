@@ -525,5 +525,15 @@ module mux_10_1(
     output out
 );
 
-assign out = (~select[3] & ~select[2] & ~select[1] & ~select[0] & in[0]) | (~select[3] & ~select[2] & ~select[1] & select[0] & in[1]) | (~select[3] & ~select[2] & select[1] & ~select[0] & in[2]) | (~select[3] & ~select[2] & select[1] & select[0] & in[3]) | (~select[3] & select[2] & ~select[1] & ~select[0] & in[4]) |( ~select[3] & select[2] & ~select[1] & select[0] & in[5]) | (~select[3] & select[2] & select[1] & ~select[0] & in[6]) |(~select[3] & select[2] & select[1] & select[0] & in[7])|(select[3] & ~select[2] & ~select[1] & ~select[0] & in[8])|(select[3] & ~select[2] & ~select[1] & select[0] & in[9]);
+assign out = (~select[3] & ~select[2] & ~select[1] & ~select[0]) ? in[0] :
+			 (~select[3] & ~select[2] & ~select[1] & select[0]) ? in[1] : 
+			 (~select[3] & ~select[2] & select[1] & ~select[0]) ? in[2] : 
+			 (~select[3] & ~select[2] & select[1] & select[0]) ? in[3] :
+			 (~select[3] & select[2] & ~select[1] & ~select[0]) ? in[4] :
+			 (~select[3] & select[2] & ~select[1] & select[0]) ? in[5] : 
+			 (~select[3] & select[2] & select[1] & ~select[0]) ? in[6] :
+			 (~select[3] & select[2] & select[1] & select[0]) ? in[7] :
+			 (select[3] & ~select[2] & ~select[1] & ~select[0]) ? in[8] :
+			 (select[3] & ~select[2] & ~select[1] & select[0]) ? in[9]) : 1'b0;
+	
 endmodule
