@@ -45,7 +45,10 @@ module alu_tb ();
                     end
                 else if (alu_op == 4'b0011)
                     begin
-                        if ()
+                        if (op1[15:8] + op2[15:8] + op1[7:0] + op2[7:0])
+                            begin
+                                $display("[FAIL %b]")
+                            end
                     end
             end
         

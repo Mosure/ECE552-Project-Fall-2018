@@ -385,7 +385,7 @@ cla_adder_4bit a7(
 );
 assign C3[2] = G3[2] | (P3[2] & C3[1]);
 
-assign Sum = {4{C3[2]},S3};
+assign Sum = {{4{C3[2]}},S3};
 
 
 endmodule
@@ -534,6 +534,6 @@ assign out = (~select[3] & ~select[2] & ~select[1] & ~select[0]) ? in[0] :
 			 (~select[3] & select[2] & select[1] & ~select[0]) ? in[6] :
 			 (~select[3] & select[2] & select[1] & select[0]) ? in[7] :
 			 (select[3] & ~select[2] & ~select[1] & ~select[0]) ? in[8] :
-			 (select[3] & ~select[2] & ~select[1] & select[0]) ? in[9]) : 1'b0;
+			 (select[3] & ~select[2] & ~select[1] & select[0]) ? in[9] : 1'b0;
 	
 endmodule

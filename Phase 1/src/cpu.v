@@ -9,12 +9,13 @@ module cpu (clk, rst_n, hlt, pc);
 	wire RegRead, RegWrite, MemWrite, zEn, vEn, nEn;
 	wire[1:0] ALUSrc, Branch, WriteSelect;
 	wire[3:0] ALUOp;
-	wire[3:0] RegReadMuxOut;
+	wire[3:0] RegReadMuxOut, RegReadMemWriteMuxOut;
 	wire[15:0] Rs, Rt;
 	wire[15:0] WriteSelectMuxOut, ALUSrcMuxOut;
 	wire[15:0] imm_sgnext_shft1;
 	wire[2:0] Flag, FlagIn;
 	wire[15:0] ALUOut, DMemOut;
+
 
 	PCregister PC(.clk(clk), .rst(~rst_n), .wen(~hlt), .nextPC(next_pc), .PC(pc));											// Halt Mux
 
@@ -28,10 +29,12 @@ module cpu (clk, rst_n, hlt, pc);
 
 	assign RegReadMuxOut = (RegRead) ? Instruction[11:8] : Instruction[7:4];
 
+	assign RegReadMemWriteMuxOut = (MemWrite) ? Instruction[11:8] : Instruction[3:0];
+
 	RegisterFile registers(.clk(clk),													// Registers 
 							.rst(~rst_n), 
 							.SrcReg1(RegReadMuxOut), 
-							.SrcReg2(Instruction[3:0]), 
+							.SrcReg2(RegReadMemWriteMuxOut), 
 							.DstReg(Instruction[11:8]),
 							.WriteReg(RegWrite),
 							.DstData(WriteSelectMuxOut),
