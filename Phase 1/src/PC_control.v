@@ -55,10 +55,10 @@ module PC_control(C, I, F, B, Breg, PC_in, PC_out);
 	adder_16bit	incPC(.A(PC_in), .B(16'h0002), .Sum(PC_inc), .Ovfl());
 	
 	//Shift the immediate
-	assign I_shifted = I << 1;
+	assign I_shifted = {{6{I[8]}}, I, 1'b0};
 
 	//Add the immediate
-	adder_16bit	branchPC(.A(PC_inc), .B({6'h00, I_shifted}), .Sum(PC_branch), .Ovfl());
+	adder_16bit	branchPC(.A(PC_inc), .B({I_shifted}), .Sum(PC_branch), .Ovfl());
 
 	//Select which new PC option to use
 	assign PC_out = (B[1] & takeBranch) ? ((B[0]) ? Breg : PC_branch) : PC_inc;
