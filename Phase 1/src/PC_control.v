@@ -7,7 +7,7 @@ module PC_control(C, I, F, B, Breg, PC_in, PC_out);
 	output[15:0] PC_out;
 
 	wire[15:0] PC_inc, PC_branch;
-	wire takeBranch;
+	reg takeBranch;
 	wire[15:0] I_shifted;
 
 	/*ccc
@@ -28,28 +28,19 @@ module PC_control(C, I, F, B, Breg, PC_in, PC_out);
 	11 branch to register
 	*/
 
-	//always@(C,F) begin
-	//	case (C)
-	//		3'b000: takeBranch = ~F[2]; 				//Not Equal
-	//		3'b001: takeBranch = F[2];					//Equal
-	//		3'b010: takeBranch = ~(F[2] | F[0]);		//Greater than
-	//		3'b011: takeBranch = ~F[0];					//Less than
-	//		3'b100: takeBranch = F[2] | ~(F[2] | F[0]);	//Greater than or Equal
-	//		3'b101: takeBranch = F[0] | F[2]; 			//Less than or Equal
-	//		3'b110: takeBranch = F[1];					//Overflow
-	//		3'b111: takeBranch = 1'b1;					//Unconditional
-	//		default: begin takeBranch = 1'b0; $display("Error, PC_control default case was selected, %b", C); end
-	//	endcase
-	//end
-
-	assign takeBranch = (~C[2]&~C[1]&~C[0] ? ~F[2] : 1'bz) |
-						(~C[2]&~C[1]& C[0] ?  F[2] : 1'bz) |
-						(~C[2]& C[1]&~C[0] ?~(F[2] | F[0]) : 1'bz) |
-						(~C[2]& C[1]& C[0] ? ~F[0] : 1'bz) |
-						( C[2]&~C[1]&~C[0] ?  F[2] | ~(F[2] | F[0]) : 1'bz) |
-						( C[2]&~C[1]& C[0] ?  F[0] | F[2] : 1'bz) |
-						( C[2]& C[1]&~C[0] ?  F[1] : 1'bz) |
-						( C[2]& C[1]& C[0] ?  1'b1 : 1'bz) | 1'b0;
+	always@(*) begin
+		case (C)
+			3'b000: takeBranch = ~F[2]; 				//Not Equal
+			3'b001: takeBranch = F[2];					//Equal
+			3'b010: takeBranch = ~(F[2] | F[0]);		//Greater than
+			3'b011: takeBranch = ~F[0];					//Less than
+			3'b100: takeBranch = F[2] | ~(F[2] | F[0]);	//Greater than or Equal
+			3'b101: takeBranch = F[0] | F[2]; 			//Less than or Equal
+			3'b110: takeBranch = F[1];					//Overflow
+			3'b111: takeBranch = 1'b1;					//Unconditional
+			default: begin takeBranch = 1'b0; $display("Error, PC_control default case was selected, %b", C); end
+		endcase
+	end
 
 	//Increment the PC
 	adder_16bit	incPC(.A(PC_in), .B(16'h0002), .Sum(PC_inc), .Ovfl());
