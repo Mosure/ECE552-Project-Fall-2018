@@ -7,6 +7,7 @@ reg [15:0] op1;
 reg [15:0] op2;
 reg [3:0] aluop;
 wire Z,N,V;
+wire [2:0] Flag;
 wire [15:0] alu_out;
 //wire error;
 
@@ -14,11 +15,13 @@ alu alu1(
 .op1(op1),
 .op2(op2),
 .aluop(aluop),
-.Z(Z),
-.N(N),
-.V(V),
+.Flag(Flag),
 .alu_out(alu_out)
 );
+
+assign Z = Flag[2];
+assign N = Flag[0];
+assign V = Flag[1];
 
 initial
 begin

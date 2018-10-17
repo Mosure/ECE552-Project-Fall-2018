@@ -38,7 +38,7 @@ module PC_control(C, I, F, B, Breg, PC_in, PC_out);
 			3'b101: takeBranch = F[0] | ~(F[2] | F[0]); //Less than or Equal
 			3'b110: takeBranch = F[1];					//Overflow
 			3'b111: takeBranch = 1'b1;					//Unconditional
-			default: begin takeBranch = 1'b0; $display("Error, PC_control default case was selected"); end
+			default: begin takeBranch = 1'b0; $display("Error, PC_control default case was selected, %b", C); end
 		endcase
 	end
 

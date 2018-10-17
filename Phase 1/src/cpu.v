@@ -3,7 +3,7 @@ module cpu (clk, rst_n, hlt, pc);
     input           rst_n;
 
     output          hlt;
-    output reg[15:0]  pc;
+    output  [15:0]  pc;
 	
 	wire[15:0] next_pc, Instruction;
 	wire RegRead, RegWrite, MemWrite, zEn, vEn, nEn;
@@ -16,7 +16,7 @@ module cpu (clk, rst_n, hlt, pc);
 	wire[2:0] Flag, FlagIn;
 	wire[15:0] ALUOut, DMemOut;
 	
-	PCregister PC(.clk(clk), .rst(~rst_n), .wen(~hlt), .nextPC(next_pc), PC(pc));											// Halt Mux
+	PCregister PC(.clk(clk), .rst(~rst_n), .wen(~hlt), .nextPC(next_pc), .PC(pc));											// Halt Mux
 
 	memory1c IMEM(.data_in(16'hzzzz),								 					// Instruction Memory
 					.data_out(Instruction), 
@@ -81,9 +81,9 @@ module cpu (clk, rst_n, hlt, pc);
 						  .ALUSrc(ALUSrc),
 						  .Branch(Branch),
 						  .WriteSelect(WriteSelect),
-						  .ALUOp(ALUOp)
-			      .zEn(zEn),
-			      .vEn(vEn),
-			      .nEn(nEn));
+						  .ALUOp(ALUOp),
+						  .zEn(zEn),
+						  .vEn(vEn),
+						  .nEn(nEn));
 	
 endmodule

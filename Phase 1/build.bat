@@ -32,14 +32,22 @@ iverilog -o ./bin/pc_control ./src/shifter.v ./src/alu.v ./src/PC_control.v
 iverilog -o ./bin/test/pc_control_tb ./src/shifter.v ./src/alu.v ./src/PC_control.v ./src/test/PC_Control_tb.v
 echo.
 
+echo Building PC Register...
+iverilog -o ./bin/pc_register ./src/D-Flip-Flop.v ./src/PCregister.v
+echo.
+
+echo Building Flag Registers...
+iverilog -o ./bin/pc_register ./src/D-Flip-Flop.v ./src/FlagRegisters.v
+echo.
+
 echo Building CPU...
 iverilog -o ./bin/cpu ./src/ReadDecoder_4_16.v ./src/WriteDecoder_4_16.v ./src/D-Flip-Flop.v ./src/BitCell.v ./src/Register.v^
-            ./src/Control.v ./src/PC_control.v ./src/RegisterFile.v ./src/shifter.v ./src/alu.v ./src/memory.v ./src/cpu.v
+            ./src/Control.v ./src/PC_control.v ./src/RegisterFile.v ./src/PCregister.v ./src/FlagRegisters.v ./src/shifter.v ./src/alu.v ./src/memory.v ./src/cpu.v
 echo.
 
 echo Building Phase 1 Testbench...
 iverilog -o ./project-phase1-testbench/phase1_tb ./src/ReadDecoder_4_16.v ./src/WriteDecoder_4_16.v ./src/D-Flip-Flop.v ./src/BitCell.v ./src/Register.v^
-            ./src/Control.v ./src/PC_control.v ./src/RegisterFile.v ./src/shifter.v ./src/alu.v ./src/memory.v ./src/cpu.v ./project-phase1-testbench/project-phase1-testbench.v
+            ./src/Control.v ./src/PC_control.v ./src/RegisterFile.v ./src/PCregister.v ./src/FlagRegisters.v ./src/shifter.v ./src/alu.v ./src/memory.v ./src/cpu.v ./project-phase1-testbench/project-phase1-testbench.v
 echo.
 
 echo Done.
