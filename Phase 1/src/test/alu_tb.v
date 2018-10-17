@@ -73,14 +73,26 @@ module alu_tb ();
                     end
                 else if (alu_op == 4'b0111)
                     begin
-                        if (op1[15:12] + op2[15:12] != out[15:12] || op1[7:4] + op2[7:4] != out[7:4] || op1[3:0] + op2[3:0] != out[3:0])
+                        if (op1[15:12] + op2[15:12] != out[15:12] || op1[11:8] + op2[11:8] != out[11:8] || op1[7:4] + op2[7:4] != out[7:4] || op1[3:0] + op2[3:0] != out[3:0])
                             begin
-                                $display("[FAIL %b]")
+                                $display("[FAIL %b]", alu_op);
+                                failed++;
                             end
-                            
-                        if(op1[11:8] + op2[11:8] != out[11:8])
+                    end
+                else if (alu_op == 4'b1000)
+                    begin
+                        if ({op1[15:8], op2[7:0]} != out)
                             begin
-
+                                $display("[FAIL %b]", alu_op);
+                                failed++;
+                            end
+                    end
+                else if (alu_op == 4'b1001)
+                    begin
+                        if ({op2[15:8], op1[7:0]} != out)
+                            begin
+                                $display("[FAIL %b]", alu_op);
+                                failed++;
                             end
                     end
             end
