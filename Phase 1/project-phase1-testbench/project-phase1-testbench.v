@@ -26,14 +26,8 @@ module cpu_tb();
 
      
 
-   cpu DUT(.clk(clk), .rst_n(rst_n), .pc_out(PC), .hlt(Halt)); /* Instantiate your processor */
+   cpu DUT(.clk(clk), .rst_n(rst_n), .pc(PC), .hlt(Halt)); /* Instantiate your processor */
    
-
-
-
-
-
-
    /* Setup */
    initial begin
       $display("Hello world...simulation starting");
@@ -63,24 +57,19 @@ module cpu_tb();
     always #50 begin   // delay 1/2 clock period each time thru loop
       clk = ~clk;
     end
-	
-    always @(posedge clk) begin
-    	cycle_count = cycle_count + 1;
-	if (cycle_count > 100000) begin
-		$display("hmm....more than 100000 cycles of simulation...error?\n");
-		$finish;
-	end
-    end
-
-
-
-
 
 
 
 
   /* Stats */
    always @ (posedge clk) begin
+   #10;
+   cycle_count = cycle_count + 1;
+	if (cycle_count > 100000) begin
+		$display("hmm....more than 100000 cycles of simulation...error?\n");
+		$finish;
+	end
+
       if (rst_n) begin
          if (Halt || RegWrite || MemWrite) begin
             inst_count = inst_count + 1;
@@ -154,27 +143,27 @@ module cpu_tb();
    // names on the right hand side
     
 //   assign PC = DUT.fetch0.pcCurrent; //You won't need this because it's part of the main cpu interface
-   assign Inst = DUT.fetch0.instr;
+   assign Inst = DUT.Instruction;
    
-   assign RegWrite = DUT.decode0.regFile0.write;
+   assign RegWrite = DUT.registers.WriteReg;
    // Is memory being read, one bit signal (1 means yes, 0 means no)
    
-   assign WriteRegister = DUT.decode0.regFile0.writeregsel;
+   assign WriteRegister = DUT.registers.DstReg;
    // The name of the register being written to. (4 bit signal)
 
-   assign WriteData = DUT.decode0.regFile0.writedata;
+   assign WriteData = DUT.registers.DstData;
    // Data being written to the register. (16 bits)
    
-   assign MemRead =  DUT.memory0.memRead;
+   assign MemRead =  DUT.DMEM.enable & (~DUT.DMEM.wr);
    // Is memory being read, one bit signal (1 means yes, 0 means no)
    
-   assign MemWrite = (DUT.memory0.memReadorWrite & DUT.memory0.memWrite);
+   assign MemWrite = DUT.DMEM.enable & DUT.DMEM.wr;
    // Is memory being written to (1 bit signal)
    
-   assign MemAddress = DUT.memory0.aluResult;
+   assign MemAddress = DUT.DMEM.addr;
    // Address to access memory with (for both reads and writes to memory, 16 bits)
    
-   assign MemData = DUT.memory0.writeData;
+   assign MemData = DUT.DMEM.data_in;
    // Data to be written to memory for memory writes (16 bits)
    
 //   assign Halt = DUT.memory0.halt; //You won't need this because it's part of the main cpu interface

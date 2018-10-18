@@ -7,8 +7,8 @@ module PC_control(C, I, F, B, Breg, PC_in, PC_out);
 	output[15:0] PC_out;
 
 	wire[15:0] PC_inc, PC_branch;
-	reg branch;
-	wire[9:0] I_shifted;
+	reg takeBranch;
+	wire[15:0] I_shifted;
 
 	/*ccc
 	000 not equal 0xx
@@ -29,29 +29,29 @@ module PC_control(C, I, F, B, Breg, PC_in, PC_out);
 	*/
 
 	always@(*) begin
-		case (C)
-			3'b000: branch = ~F[2]; 				//Not Equal
-			3'b001: branch = F[2];					//Equal
-			3'b010: branch = ~(F[2] | F[0]);		//Greater than
-			3'b011: branch = ~F[0];					//Less than
-			3'b100: branch = F[2] | ~(F[2] | F[0]);	//Greater than or Equal
-			3'b101: branch = F[0] | ~(F[2] | F[0]); //Less than or Equal
-			3'b110: branch = F[1];					//Overflow
-			3'b111: branch = 1'b1;					//Unconditional
-			default: begin branch = 1'b0; $display("Error, PC_control default case was selected"); end
+		casex (C)
+			3'b000: takeBranch = ~F[2]; 				//Not Equal
+			3'b001: takeBranch = F[2];					//Equal
+			3'b010: takeBranch = ~(F[2] | F[0]);		//Greater than
+			3'b011: takeBranch = ~F[0];					//Less than
+			3'b100: takeBranch = F[2] | ~(F[2] | F[0]);	//Greater than or Equal
+			3'b101: takeBranch = F[0] | F[2]; 			//Less than or Equal
+			3'b110: takeBranch = F[1];					//Overflow
+			3'b111: takeBranch = 1'b1;					//Unconditional
+			default: begin takeBranch = 1'b0; $display("Error, PC_control default case was selected, %b", C); end
 		endcase
 	end
 
 	//Increment the PC
-	adder_16bit	incPC(.a(PC_in), .b(16'h0002), .cin(1'b0), .sum(PC_inc), .cout(), .finalcin());
+	Adder_NoSat	incPC(.a(PC_in), .b(16'h0002), .sum(PC_inc));
 	
 	//Shift the immediate
-	assign I_shifted = I << 1;
+	assign I_shifted = {{6{I[8]}}, I, 1'b0};
 
 	//Add the immediate
-	adder_16bit	branchPC(.a(PC_inc), .b({6'h00, I_shifted}), .cin(1'b0), .sum(PC_branch), .cout(), .finalcin());
+	Adder_NoSat	branchPC(.a(PC_inc), .b({I_shifted}), .sum(PC_branch));
 
 	//Select which new PC option to use
-	assign PC_out = (B[1] & branch) ? ((B[0]) ? Breg : PC_branch) : PC_inc;
+	assign PC_out = (B[1] & takeBranch) ? ((B[0]) ? Breg : PC_branch) : PC_inc;
 						   
 endmodule

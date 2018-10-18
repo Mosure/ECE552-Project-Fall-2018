@@ -1,0 +1,161 @@
+#! c:/iverilog-x64/bin/vvp
+:ivl_version "10.1 (stable)" "(v10_1_1)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision + 0;
+:vpi_module "system";
+:vpi_module "vhdl_sys";
+:vpi_module "v2005_math";
+:vpi_module "va_math";
+S_0000000001096790 .scope module, "FlagRegisters" "FlagRegisters" 2 1;
+ .timescale 0 0;
+    .port_info 0 /INPUT 1 "clk"
+    .port_info 1 /INPUT 1 "rst"
+    .port_info 2 /INPUT 3 "FlagIn"
+    .port_info 3 /INPUT 1 "zEn"
+    .port_info 4 /INPUT 1 "nEn"
+    .port_info 5 /INPUT 1 "vEn"
+    .port_info 6 /OUTPUT 3 "FlagOut"
+o0000000002891748 .functor BUFZ 3, C4<zzz>; HiZ drive
+v000000000288aad0_0 .net "FlagIn", 2 0, o0000000002891748;  0 drivers
+v000000000288b2f0_0 .net "FlagOut", 2 0, L_00000000028e6a90;  1 drivers
+o00000000028911d8 .functor BUFZ 1, C4<z>; HiZ drive
+v000000000288ab70_0 .net "clk", 0 0, o00000000028911d8;  0 drivers
+o00000000028912c8 .functor BUFZ 1, C4<z>; HiZ drive
+v00000000028e7e90_0 .net "nEn", 0 0, o00000000028912c8;  0 drivers
+o0000000002891268 .functor BUFZ 1, C4<z>; HiZ drive
+v00000000028e7ad0_0 .net "rst", 0 0, o0000000002891268;  0 drivers
+o0000000002891478 .functor BUFZ 1, C4<z>; HiZ drive
+v00000000028e75d0_0 .net "vEn", 0 0, o0000000002891478;  0 drivers
+o0000000002891628 .functor BUFZ 1, C4<z>; HiZ drive
+v00000000028e6f90_0 .net "zEn", 0 0, o0000000002891628;  0 drivers
+L_00000000028e6c70 .part o0000000002891748, 2, 1;
+L_00000000028e63b0 .part o0000000002891748, 1, 1;
+L_00000000028e6a90 .concat8 [ 1 1 1 0], v000000000288acb0_0, v000000000288a8f0_0, v000000000288aa30_0;
+L_00000000028e7c10 .part o0000000002891748, 0, 1;
+S_00000000028850d0 .scope module, "nRegister" "dff" 2 9, 3 3 0, S_0000000001096790;
+ .timescale 0 0;
+    .port_info 0 /OUTPUT 1 "q"
+    .port_info 1 /INPUT 1 "d"
+    .port_info 2 /INPUT 1 "wen"
+    .port_info 3 /INPUT 1 "clk"
+    .port_info 4 /INPUT 1 "rst"
+v000000000288b390_0 .net "clk", 0 0, o00000000028911d8;  alias, 0 drivers
+v000000000288a530_0 .net "d", 0 0, L_00000000028e7c10;  1 drivers
+v000000000288ac10_0 .net "q", 0 0, v000000000288acb0_0;  1 drivers
+v000000000288a5d0_0 .net "rst", 0 0, o0000000002891268;  alias, 0 drivers
+v000000000288acb0_0 .var "state", 0 0;
+v000000000288a7b0_0 .net "wen", 0 0, o00000000028912c8;  alias, 0 drivers
+E_000000000109c120 .event posedge, v000000000288b390_0;
+S_0000000002885250 .scope module, "vRegister" "dff" 2 8, 3 3 0, S_0000000001096790;
+ .timescale 0 0;
+    .port_info 0 /OUTPUT 1 "q"
+    .port_info 1 /INPUT 1 "d"
+    .port_info 2 /INPUT 1 "wen"
+    .port_info 3 /INPUT 1 "clk"
+    .port_info 4 /INPUT 1 "rst"
+v000000000288ad50_0 .net "clk", 0 0, o00000000028911d8;  alias, 0 drivers
+v000000000288a670_0 .net "d", 0 0, L_00000000028e63b0;  1 drivers
+v000000000288af30_0 .net "q", 0 0, v000000000288a8f0_0;  1 drivers
+v000000000288b110_0 .net "rst", 0 0, o0000000002891268;  alias, 0 drivers
+v000000000288a8f0_0 .var "state", 0 0;
+v000000000288a850_0 .net "wen", 0 0, o0000000002891478;  alias, 0 drivers
+S_00000000028e5ec0 .scope module, "zRegister" "dff" 2 7, 3 3 0, S_0000000001096790;
+ .timescale 0 0;
+    .port_info 0 /OUTPUT 1 "q"
+    .port_info 1 /INPUT 1 "d"
+    .port_info 2 /INPUT 1 "wen"
+    .port_info 3 /INPUT 1 "clk"
+    .port_info 4 /INPUT 1 "rst"
+v000000000288b1b0_0 .net "clk", 0 0, o00000000028911d8;  alias, 0 drivers
+v000000000288afd0_0 .net "d", 0 0, L_00000000028e6c70;  1 drivers
+v000000000288b070_0 .net "q", 0 0, v000000000288aa30_0;  1 drivers
+v000000000288a990_0 .net "rst", 0 0, o0000000002891268;  alias, 0 drivers
+v000000000288aa30_0 .var "state", 0 0;
+v000000000288b250_0 .net "wen", 0 0, o0000000002891628;  alias, 0 drivers
+    .scope S_00000000028e5ec0;
+T_0 ;
+    %wait E_000000000109c120;
+    %load/vec4 v000000000288a990_0;
+    %flag_set/vec4 8;
+    %jmp/0 T_0.0, 8;
+    %pushi/vec4 0, 0, 1;
+    %jmp/1 T_0.1, 8;
+T_0.0 ; End of true expr.
+    %load/vec4 v000000000288b250_0;
+    %flag_set/vec4 9;
+    %jmp/0 T_0.2, 9;
+    %load/vec4 v000000000288afd0_0;
+    %jmp/1 T_0.3, 9;
+T_0.2 ; End of true expr.
+    %load/vec4 v000000000288aa30_0;
+    %jmp/0 T_0.3, 9;
+ ; End of false expr.
+    %blend;
+T_0.3;
+    %jmp/0 T_0.1, 8;
+ ; End of false expr.
+    %blend;
+T_0.1;
+    %store/vec4 v000000000288aa30_0, 0, 1;
+    %jmp T_0;
+    .thread T_0;
+    .scope S_0000000002885250;
+T_1 ;
+    %wait E_000000000109c120;
+    %load/vec4 v000000000288b110_0;
+    %flag_set/vec4 8;
+    %jmp/0 T_1.0, 8;
+    %pushi/vec4 0, 0, 1;
+    %jmp/1 T_1.1, 8;
+T_1.0 ; End of true expr.
+    %load/vec4 v000000000288a850_0;
+    %flag_set/vec4 9;
+    %jmp/0 T_1.2, 9;
+    %load/vec4 v000000000288a670_0;
+    %jmp/1 T_1.3, 9;
+T_1.2 ; End of true expr.
+    %load/vec4 v000000000288a8f0_0;
+    %jmp/0 T_1.3, 9;
+ ; End of false expr.
+    %blend;
+T_1.3;
+    %jmp/0 T_1.1, 8;
+ ; End of false expr.
+    %blend;
+T_1.1;
+    %store/vec4 v000000000288a8f0_0, 0, 1;
+    %jmp T_1;
+    .thread T_1;
+    .scope S_00000000028850d0;
+T_2 ;
+    %wait E_000000000109c120;
+    %load/vec4 v000000000288a5d0_0;
+    %flag_set/vec4 8;
+    %jmp/0 T_2.0, 8;
+    %pushi/vec4 0, 0, 1;
+    %jmp/1 T_2.1, 8;
+T_2.0 ; End of true expr.
+    %load/vec4 v000000000288a7b0_0;
+    %flag_set/vec4 9;
+    %jmp/0 T_2.2, 9;
+    %load/vec4 v000000000288a530_0;
+    %jmp/1 T_2.3, 9;
+T_2.2 ; End of true expr.
+    %load/vec4 v000000000288acb0_0;
+    %jmp/0 T_2.3, 9;
+ ; End of false expr.
+    %blend;
+T_2.3;
+    %jmp/0 T_2.1, 8;
+ ; End of false expr.
+    %blend;
+T_2.1;
+    %store/vec4 v000000000288acb0_0, 0, 1;
+    %jmp T_2;
+    .thread T_2;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "./src/FlagRegisters.v";
+    "./src/D-Flip-Flop.v";

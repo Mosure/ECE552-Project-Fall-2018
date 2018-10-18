@@ -7,6 +7,7 @@ reg [15:0] op1;
 reg [15:0] op2;
 reg [3:0] aluop;
 wire Z,N,V;
+wire [2:0] Flag;
 wire [15:0] alu_out;
 //wire error;
 
@@ -14,11 +15,13 @@ alu alu1(
 .op1(op1),
 .op2(op2),
 .aluop(aluop),
-.Z(Z),
-.N(N),
-.V(V),
+.Flag(Flag),
 .alu_out(alu_out)
 );
+
+assign Z = Flag[2];
+assign N = Flag[0];
+assign V = Flag[1];
 
 initial
 begin
@@ -129,7 +132,7 @@ end
 
 initial
 begin
-$monitor("time = %2d, A =%4h, B=%4h, Aluop=%4b, Result=%4h, Z=%1b, N=%1b, V=%1b ", $time,op1,op2, aluop,alu_out,Z,N,V);
+$monitor("time = %2d, A =%d, B=%d, Aluop=%4b, Result=%d, Z=%1b, N=%1b, V=%1b ", $time,op1,op2, aluop,alu_out,Z,N,V);
 end
  
 endmodule

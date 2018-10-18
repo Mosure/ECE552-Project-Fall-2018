@@ -1,10 +1,10 @@
 
-module alu(op1,op2,aluop,Z,N,V,alu_out);
+module alu(op1,op2,aluop,Flag,alu_out);
 input [15:0] op1;
 input [15:0] op2;
 input [3:0] aluop;
 output [15:0] alu_out;
-output Z,N,V;
+output [2:0] Flag;
 
 wire [15:0] out0;
 wire [15:0] out1;
@@ -74,9 +74,9 @@ paddsb_4bit paddsb3( .A(op1[15:12]),
 assign out8 = (op1[15:0] & 16'hFF00) | op2[7:0];
 assign out9 = (op1[15:0] & 16'h00FF) | (op2[7:0] << 8);
 
-assign Z = ~(alu_out[15] | alu_out[14] | alu_out[13] | alu_out[12] |  alu_out[11] | alu_out[10] | alu_out[9] | alu_out[8] |  alu_out[7] | alu_out[6] | alu_out[5] | alu_out[4] |  alu_out[3] | alu_out[2] | alu_out[1] | alu_out[0]);
-assign N = (aluop == 3'b000)? out0[15]: (aluop == 3'b001)? out1[15]: N;
-assign V = (aluop == 3'b000)? Ovfl1: (aluop == 3'b001)? Ovfl0: V;
+assign Flag[2] = ~(|alu_out);			//Z Flag
+assign Flag[1] = (aluop[0]) ? Ovfl1 : Ovfl0;	//V Flag
+assign Flag[0] = alu_out[15];			//N Flag
 
 wire [9:0] in0,in1,in2,in3,in4,in5,in6,in7,in8,in9,in10,in11,in12,in13,in14,in15;
 
@@ -192,12 +192,12 @@ output s);
 
 wire  p,q,r;
 
-	xor (p,b,a);
-	xor (s,p,cin);
+	assign p = b ^ a;
+	assign s = p ^ cin;
  
-	and(q,p,cin);
-	and(r,a,b);
-	or(cout,r,q);
+	assign q = p & cin;
+	assign r = a & b;
+	assign cout = r | q;
 
 endmodule
 
@@ -226,7 +226,7 @@ assign Cout = G[3] | (P[3] & C[3]);
 
 assign S = P ^ C;
 
-xor(Ovfl,C[3],Cout);
+assign Ovfl = C[3] ^ Cout;
 
 assign Sum = Ovfl?(B[3]?4'b1000:4'b0111):S;
 
@@ -257,7 +257,7 @@ assign Cout = G[3] | (P[3] & C[3]);
 
 assign S = P ^ C;
    
-xor(Ovfl,C[3],Cout);
+assign Ovfl = C[3] ^ Cout;
 
 assign Sum = Ovfl?(B[3]?4'b1000:4'b0111):S;
 
@@ -326,7 +326,7 @@ cla_adder_4bit a2(
 .Gen(G1[1])
 );
 
-assign C1[1] = G1[1] | (P1[1] & C1[1]);
+assign C1[1] = G1[1] | (P1[1] & C1[0]);
 
 cla_adder_4bit a3(
 .A(A[11:8]),
@@ -348,7 +348,7 @@ cla_adder_4bit a4(
 .Gen(G2[1])
 );
 
-assign C2[1] = G2[1] | (P2[1] & C2[1]);
+assign C2[1] = G2[1] | (P2[1] & C2[0]);
 
 assign ex1 = {3'b000, C1[1], S1};
 assign ex2 = {3'b000, C2[1], S2};
@@ -373,7 +373,7 @@ cla_adder_4bit a6(
 .Gen(G3[1])
 );
 
-assign C3[1] = G3[1] | (P3[1] & C3[1]);
+assign C3[1] = G3[1] | (P3[1] & C3[0]);
 
 cla_adder_4bit a7(
 .A(ex1[11:8]),
@@ -383,9 +383,9 @@ cla_adder_4bit a7(
 .Prop(P3[2]),
 .Gen(G3[2])
 );
-assign C3[2] = G3[2] | (P3[2] & C3[2]);
+assign C3[2] = G3[2] | (P3[2] & C3[1]);
 
-assign Sum = $signed(S3[9:0]);
+assign Sum = {{4{C3[2]}},S3};
 
 
 endmodule
@@ -423,7 +423,7 @@ cla_adder_4bit a1(
 .Gen(G[1])
 );
 
-assign C[1] = G[1] | (P[1] & C[1]);
+assign C[1] = G[1] | (P[1] & C[0]);
 
 cla_adder_4bit a2(
 .A(A[11:8]),
@@ -433,7 +433,7 @@ cla_adder_4bit a2(
 .Prop(P[2]),
 .Gen(G[2])
 );
-assign C[2] = G[2] | (P[2] & C[2]);
+assign C[2] = G[2] | (P[2] & C[1]);
 
 cla_adder_4bit a3(
 .A(A[15:12]),
@@ -443,7 +443,7 @@ cla_adder_4bit a3(
 .Prop(P[3]),
 .Gen(G[3])
 );
-assign C[3] = G[3] | (P[3] & C[3]);
+assign C[3] = G[3] | (P[3] & C[2]);
 
 assign Ovfl = (A[15] ^ B[15]) ? 1'b0 : (A[15] ^ S[15])? 1'b1: 1'b0;
 
@@ -478,7 +478,7 @@ cla_adder_4bit a0(
 .Gen(G[0])
 );
 
-assign C[0] = G[0] | (P[0] & 1'b0);
+assign C[0] = G[0] | (P[0] & 1'b1);
 
 cla_adder_4bit a1(
 .A(A[7:4]),
@@ -489,7 +489,7 @@ cla_adder_4bit a1(
 .Gen(G[1])
 );
 
-assign C[1] = G[1] | (P[1] & C[1]);
+assign C[1] = G[1] | (P[1] & C[0]);
 
 cla_adder_4bit a2(
 .A(A[11:8]),
@@ -499,7 +499,7 @@ cla_adder_4bit a2(
 .Prop(P[2]),
 .Gen(G[2])
 );
-assign C[2] = G[2] | (P[2] & C[2]);
+assign C[2] = G[2] | (P[2] & C[1]);
 
 cla_adder_4bit a3(
 .A(A[15:12]),
@@ -509,14 +509,15 @@ cla_adder_4bit a3(
 .Prop(P[3]),
 .Gen(G[3])
 );
-assign C[3] = G[3] | (P[3] & C[3]);
+assign C[3] = G[3] | (P[3] & C[2]);
 
 assign Ovfl = (A[15] ^ B[15]) ? 1'b0 : (A[15] ^ S[15])? 1'b1: 1'b0;
 
 assign Sum = Ovfl?(B[15]?16'b1000000000000000:16'b0111111111111111):S;
 
-
 endmodule
+
+////////////////////////////////
 
 module mux_10_1(
     input [9:0] in,
@@ -524,5 +525,15 @@ module mux_10_1(
     output out
 );
 
-assign out = (~select[3] & ~select[2] & ~select[1] & ~select[0] & in[0]) | (~select[3] & ~select[2] & ~select[1] & select[0] & in[1]) | (~select[3] & ~select[2] & select[1] & ~select[0] & in[2]) | (~select[3] & ~select[2] & select[1] & select[0] & in[3]) | (~select[3] & select[2] & ~select[1] & ~select[0] & in[4]) |( ~select[3] & select[2] & ~select[1] & select[0] & in[5]) | (~select[3] & select[2] & select[1] & ~select[0] & in[6]) |(~select[3] & select[2] & select[1] & select[0] & in[7])|(select[3] & ~select[2] & ~select[1] & ~select[0] & in[8])|(select[3] & ~select[2] & ~select[1] & select[0] & in[9]);
+assign out = (~select[3] & ~select[2] & ~select[1] & ~select[0]) ? in[0] :
+			 (~select[3] & ~select[2] & ~select[1] & select[0]) ? in[1] : 
+			 (~select[3] & ~select[2] & select[1] & ~select[0]) ? in[2] : 
+			 (~select[3] & ~select[2] & select[1] & select[0]) ? in[3] :
+			 (~select[3] & select[2] & ~select[1] & ~select[0]) ? in[4] :
+			 (~select[3] & select[2] & ~select[1] & select[0]) ? in[5] : 
+			 (~select[3] & select[2] & select[1] & ~select[0]) ? in[6] :
+			 (~select[3] & select[2] & select[1] & select[0]) ? in[7] :
+			 (select[3] & ~select[2] & ~select[1] & ~select[0]) ? in[8] :
+			 (select[3] & ~select[2] & ~select[1] & select[0]) ? in[9] : 1'b0;
+	
 endmodule
