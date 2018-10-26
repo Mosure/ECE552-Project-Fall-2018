@@ -6,7 +6,7 @@ module cpu (clk, rst_n, hlt, pc);
     wire[15:0] next_pc, Instruction;
     wire RegRead, RegWrite, MemWrite, zEn, vEn, nEn;
     wire[1:0] ALUSrc, Branch, WriteSelect;
-	wire[3:0] ALUOp;
+    wire[3:0] ALUOp;
     wire[3:0] srcReg1, srcReg2;
     wire[15:0] regData1, regData2;
     wire[15:0] DstData, ALUSrc2;
