@@ -1,156 +1,52 @@
-module RegisterFile(input clk, input rst, input [3:0] SrcReg1, input [3:0] SrcReg2, input [3:0]
-DstReg, input WriteReg, input [15:0] DstData, inout [15:0] SrcData1, inout [15:0] SrcData2);
+module RegisterFile(clk, rst, SrcReg1, SrcReg2, DstReg, WriteReg, DstData, SrcData1, SrcData2);
+	input clk, rst, WriteReg;
+	input [3:0] SrcReg1, SrcReg2, DstReg;
+	input [15:0] DstData;
+	inout [15:0] SrcData1, SrcData2;
 
-wire [15:0] RWL1, RWL2, WWL; 
+	wire [15:0] ReadEnable1, ReadEnable2, WriteEnable, RegData1, RegData2;
 
-ReadDecoder_4_16 RD1(.RegId(SrcReg1), .Wordline(RWL1));
-ReadDecoder_4_16 RD2(.RegId(SrcReg2), .Wordline(RWL2));
+	//Decode the register values
+	ReadDecoder_4_16 SrcDecode1(.RegId(SrcReg1), .Wordline(ReadEnable1));
+	ReadDecoder_4_16 SrcDecode2(.RegId(SrcReg2), .Wordline(ReadEnable2));
+	WriteDecoder_4_16 DstDecode(.RegId(DstReg), .Wordline(WriteEnable), .WriteReg(WriteReg));
 
-WriteDecoder_4_16 WD(.RegId(DstReg), .WriteReg(WriteReg), .Wordline(WWL));
+	//Storage Space
+	Register reg15(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[15]), .ReadEnable1(ReadEnable1[15]), 
+					.ReadEnable2(ReadEnable2[15]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg14(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[14]), .ReadEnable1(ReadEnable1[14]), 
+					.ReadEnable2(ReadEnable2[14]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg13(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[13]), .ReadEnable1(ReadEnable1[13]), 
+					.ReadEnable2(ReadEnable2[13]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg12(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[12]), .ReadEnable1(ReadEnable1[12]), 
+					.ReadEnable2(ReadEnable2[12]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg11(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[11]), .ReadEnable1(ReadEnable1[11]), 
+					.ReadEnable2(ReadEnable2[11]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg10(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[10]), .ReadEnable1(ReadEnable1[10]), 
+					.ReadEnable2(ReadEnable2[10]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg9(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[9]), .ReadEnable1(ReadEnable1[9]), 
+					.ReadEnable2(ReadEnable2[9]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg8(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[8]), .ReadEnable1(ReadEnable1[8]), 
+					.ReadEnable2(ReadEnable2[8]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg7(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[7]), .ReadEnable1(ReadEnable1[7]), 
+					.ReadEnable2(ReadEnable2[7]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg6(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[6]), .ReadEnable1(ReadEnable1[6]), 
+					.ReadEnable2(ReadEnable2[6]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg5(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[5]), .ReadEnable1(ReadEnable1[5]), 
+					.ReadEnable2(ReadEnable2[5]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg4(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[4]), .ReadEnable1(ReadEnable1[4]), 
+					.ReadEnable2(ReadEnable2[4]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg3(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[3]), .ReadEnable1(ReadEnable1[3]), 
+					.ReadEnable2(ReadEnable2[3]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg2(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[2]), .ReadEnable1(ReadEnable1[2]), 
+					.ReadEnable2(ReadEnable2[2]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg1(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[1]), .ReadEnable1(ReadEnable1[1]), 
+					.ReadEnable2(ReadEnable2[1]), .Bitline1(RegData1), .Bitline2(RegData2));
+	Register reg0(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[0]), .ReadEnable1(ReadEnable1[0]), 
+					.ReadEnable2(ReadEnable2[0]), .Bitline1(RegData1), .Bitline2(RegData2));
+	
+	//Write-before-Read bypassing
+	assign SrcData1 = (DstReg == SrcReg1) ? DstData : RegData1;
+	assign SrcData2 = (DstReg == SrcReg2) ? DstData : RegData2;
 
-//R0 hardwired to 0000
-Register R0(.clk(clk),
-			.rst(rst),
-			.D(16'h0000),
-			.WriteReg(WWL[0]),
-			.ReadEnable1(RWL1[0]),
-			.ReadEnable2(RWL2[0]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-			
-Register R1(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[1]),
-			.ReadEnable1(RWL1[1]),
-			.ReadEnable2(RWL2[1]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-			
-Register R2(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[2]),
-			.ReadEnable1(RWL1[2]),
-			.ReadEnable2(RWL2[2]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-			
-Register R3(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[3]),
-			.ReadEnable1(RWL1[3]),
-			.ReadEnable2(RWL2[3]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-
-Register R4(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[4]),
-			.ReadEnable1(RWL1[4]),
-			.ReadEnable2(RWL2[4]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-
-Register R5(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[5]),
-			.ReadEnable1(RWL1[5]),
-			.ReadEnable2(RWL2[5]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));			
-
-Register R6(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[6]),
-			.ReadEnable1(RWL1[6]),
-			.ReadEnable2(RWL2[6]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-			
-Register R7(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[7]),
-			.ReadEnable1(RWL1[7]),
-			.ReadEnable2(RWL2[7]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-
-Register R8(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[8]),
-			.ReadEnable1(RWL1[8]),
-			.ReadEnable2(RWL2[8]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-
-Register R9(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[9]),
-			.ReadEnable1(RWL1[9]),
-			.ReadEnable2(RWL2[9]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-
-Register R10(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[10]),
-			.ReadEnable1(RWL1[10]),
-			.ReadEnable2(RWL2[10]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-
-Register R11(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[11]),
-			.ReadEnable1(RWL1[11]),
-			.ReadEnable2(RWL2[11]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-
-Register R12(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[12]),
-			.ReadEnable1(RWL1[12]),
-			.ReadEnable2(RWL2[12]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-
-Register R13(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[13]),
-			.ReadEnable1(RWL1[13]),
-			.ReadEnable2(RWL2[13]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-
-Register R14(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[14]),
-			.ReadEnable1(RWL1[14]),
-			.ReadEnable2(RWL2[14]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-
-Register R15(.clk(clk),
-			.rst(rst),
-			.D(DstData),
-			.WriteReg(WWL[15]),
-			.ReadEnable1(RWL1[15]),
-			.ReadEnable2(RWL2[15]),
-			.Bitline1(SrcData1),
-			.Bitline2(SrcData2));
-			
 endmodule
