@@ -25,8 +25,11 @@ module cpu (clk, rst_n, hlt, pc);
     wire[15:0] D_regData1, D_regData2;
     
     // EX Phase signals
+	wire[1:0] forwardA, forwardB;
+	wire MMforward;
     wire[2:0] Flag, FlagIn;
-    wire[15:0] ALUSrc2;
+    wire[15:0] ALUSrcMuxOut;
+	wire[15:0] ALUSrc1, ALUSrc2;
     wire[15:0] X_offset, X_shamt, X_loadByte;
     wire X_regWrite, X_memWrite, X_zEn, X_vEn, X_nEn, X_hlt;
     wire[1:0] X_writeSelect, X_ALUsrc;
@@ -34,6 +37,7 @@ module cpu (clk, rst_n, hlt, pc);
     wire[15:0] X_regData1, X_regData2, X_incPC, X_ALUOut;
     
     // MEM Phase signals
+	wire[15:0] DMEM_In;
     wire M_regWrite, M_memWrite, M_hlt;
     wire[1:0] M_writeSelect;
     wire[3:0] M_Rs, M_Rt, M_Rd;
@@ -97,23 +101,36 @@ module cpu (clk, rst_n, hlt, pc);
     // ID/EX pipeline register
     D_X_register pipeReg2(.clk(clk), .rst(rst), .wen(Pwen), .D_regWrite(D_regWrite), .D_memWrite(D_memWrite), .D_writeSelect(D_writeSelect),
                     .D_zEn(D_zEn), .D_vEn(D_vEn), .D_nEn(D_nEn), .D_hlt(D_hlt), .D_ALUsrc(D_ALUsrc), .D_ALUOp(D_ALUOp), .D_Rs(D_Rs), .D_Rt(D_Rt),
-                    .D_Rd(D_Rd), .D_offset(D_offset), .D_shamt(D_shamt), .D_loadByte(D_loadByte) .D_regData1(D_regData1), .D_regData2(D_regData2), .D_PC(D_incPC), .X_regWrite(X_regWrite),
+                    .D_Rd(D_Rd), .D_offset(D_offset), .D_shamt(D_shamt), .D_loadByte(D_loadByte), .D_regData1(D_regData1), .D_regData2(D_regData2), .D_PC(D_incPC), .X_regWrite(X_regWrite),
                     .X_memWrite(X_memWrite), .X_writeSelect(X_writeSelect), .X_zEn(X_zEn), .X_vEn(X_vEn), .X_nEn(X_nEn), .X_hlt(X_hlt), .X_ALUsrc(X_ALUsrc),
                     .X_ALUOp(X_ALUOp), .X_Rs(X_Rs), .X_Rt(X_Rt), .X_Rd(X_Rd), .X_offset(X_offset), .X_shamt(X_shamt), .X_loadByte(X_loadByte), .X_regData1(X_regData1), .X_regData2(X_regData2), .X_PC(X_incPC));
-                    
-       
+                       
     /********************
     ** Execution Stage **
     ********************/
 	
     // ALUsrc MUX
-    assign ALUSrc2 = (X_ALUsrc == 2'b00) ? X_regData2 :   // register Data
-                     (X_ALUsrc == 2'b01) ? X_shamt :        // zero extended immediate
-                     (X_ALUsrc == 2'b10) ? X_offset :       // offset for LW or SW
-                                         X_loadByte;      // 8-bit immediate
+    assign ALUSrcMuxOut = (X_ALUsrc == 2'b00) ? X_regData2 :   	 // register Data
+						  (X_ALUsrc == 2'b01) ? X_shamt :        // zero extended immediate
+						  (X_ALUsrc == 2'b10) ? X_offset :       // offset for LW or SW
+												X_loadByte;      // 8-bit immediate
+	
+	// Forwarding Unit
+	Forwarding_Unit FwdUnit(.M_regWrite(M_regWrite), .W_regWrite(W_RegWrite), .M_memWrite(M_memWrite), .M_Rd(M_Rd), .W_Rd(W_Rd),
+							.X_Rs(X_Rs), .X_Rt(X_Rt), .M_Rt(M_Rt), .forwardA(forwardA), .forwardB(forwardB), .MMforward(MMforward));
+	
+	// Forwarding MUXes
 
-    // ALU
-    alu iALU(.op1(X_regData1), .op2(ALUSrc2), .aluop(X_ALUOp), .Flag(FlagIn), .alu_out(X_ALUOut));
+	assign ALUSrc1 = (forwardA == 2'b01) ? M_ALUOut :			 // EX-EX forwarding
+					 (forwardA == 2'b10) ? DstData :			 // MEM-EX forwarding
+										   X_regData1;			 // No forwarding
+
+	assign ALUSrc2 = (forwardB == 2'b01) ? M_ALUOut :			 // EX-EX forwarding
+					 (forwardB == 2'b10) ? DstData :			 // MEM-EX forwarding
+										   ALUSrcMuxOut;		 // No forwarding										   
+    
+	// ALU
+    alu iALU(.op1(ALUSrc1), .op2(ALUSrc2), .aluop(X_ALUOp), .Flag(FlagIn), .alu_out(X_ALUOut));
 	
     // 3 flip-flops, one for each flag
     // Flag Order is ZVN
@@ -130,8 +147,12 @@ module cpu (clk, rst_n, hlt, pc);
     /************************
     ** Memory Access Stage **
     ************************/
-    // Data Memory
-    memory1c DMEM(.clk(clk), .rst(rst), .data_in(M_regData2), .addr(M_ALUOut), .enable(1'b1), .wr(M_MemWrite), .data_out(M_DMemOut));
+    
+	// MEM_MEM Forwarding MUX
+	assign DMEM_In = MMforward ? DstData : M_regData2; 
+	
+	// Data Memory
+    memory1c DMEM(.clk(clk), .rst(rst), .data_in(DMEM_In), .addr(M_ALUOut), .enable(1'b1), .wr(M_MemWrite), .data_out(M_DMemOut));
     
     // MEM/WB pipeline register
     M_W_register pipeReg4(.clk(clk), .rst(rst), .wen(Pwen), .M_regWrite(M_regWrite), .M_hlt(M_hlt), .M_writeSelect(M_writeSelect), .M_Rs(M_Rs),
