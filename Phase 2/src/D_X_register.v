@@ -1,19 +1,20 @@
 module D_X_register(clk, rst, wen, D_regWrite, D_memWrite, D_writeSelect, D_zEn, D_vEn, D_nEn, D_hlt, D_ALUsrc,
-                    D_ALUOp, D_Rs, D_Rt, D_Rd, D_imm, D_regData1, D_regData2, D_PC, X_regWrite, X_memWrite, X_writeSelect,
-                    X_zEn, X_vEn, X_nEn, X_hlt, X_ALUsrc, X_ALUOp, X_Rs, X_Rt, X_Rd, X_imm, X_regData1, X_regData2, X_PC);
+                    D_ALUOp, D_Rs, D_Rt, D_Rd, D_offset, D_shamt, D_loadByte, D_regData1, D_regData2, D_PC, X_regWrite, X_memWrite, X_writeSelect,
+                    X_zEn, X_vEn, X_nEn, X_hlt, X_ALUsrc, X_ALUOp, X_Rs, X_Rt, X_Rd, X_offset, X_shamt, X_loadByte, X_regData1, X_regData2, X_PC);
     input clk, rst, wen;
     input D_regWrite, D_memWrite, D_hlt; 
     input D_zEn, D_vEn, D_nEn;
     input[1:0] D_ALUsrc, D_writeSelect;
     input[3:0] D_ALUOp, D_Rs, D_Rt, D_Rd;
-    input[7:0] D_imm;
+	input[15:0] D_offset, D_shamt, D_loadByte;
     input[15:0] D_regData1, D_regData2, D_PC;
+	
     output X_regWrite, X_memWrite, X_hlt;
     output X_zEn, X_vEn, X_nEn;
     output[1:0] X_ALUsrc, X_writeSelect;
     output[3:0] X_ALUOp, X_Rs, X_Rt, X_Rd;
-    output[7:0] X_imm;
-    output[15:0] X_regData1, X_regData2, X_PC;
+    output[15:0] X_offset, X_shamt, X_loadByte;
+	output[15:0] X_regData1, X_regData2, X_PC;
 
     
     // Signals needed at EX stage
@@ -22,7 +23,9 @@ module D_X_register(clk, rst, wen, D_regWrite, D_memWrite, D_writeSelect, D_zEn,
     dff nEn(.clk(clk), .rst(rst), .wen(wen), .d(D_nEn), .q(X_nEn));
     reg_2bit ALUSrc(.clk(clk), .rst(rst), .wen(wen), .d(D_ALUsrc), .q(X_ALUsrc));
     reg_4bit ALUOp(.clk(clk), .rst(rst), .wen(wen), .d(D_ALUOp), .q(X_ALUOp));
-    reg_8bit imm(.clk(clk), .rst(rst), .wen(wen), .d(D_imm), .q(X_imm));
+    reg_16bit offset(.clk(clk), .rst(rst), .wen(wen), .d(D_offset), .q(X_offset));
+    reg_16bit shamt(.clk(clk), .rst(rst), .wen(wen), .d(D_shamt), .q(X_shamt));
+    reg_16bit loadByte(.clk(clk), .rst(rst), .wen(wen), .d(D_loadByte), .q(X_loadByte));
     reg_16bit regData1(.clk(clk), .rst(rst), .wen(wen), .d(D_regData1), .q(X_regData1));
    
     // Signals needed at MEM stage
