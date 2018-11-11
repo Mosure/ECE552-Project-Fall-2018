@@ -18,20 +18,19 @@ module cpu (clk, rst_n, hlt, pc);
     wire RegRead;
     wire[1:0] Branch;
     wire[15:0] D_instruction, D_incPC;
+    wire[15:0] D_offset, D_shamt, D_loadByte;
     wire D_regWrite, D_memWrite, D_zEn, D_vEn, D_nEn, D_hlt;
     wire[1:0] D_ALUsrc, D_writeSelect;
     wire[3:0] D_ALUOp, D_Rs, D_Rt, D_Rd;
-    wire[7:0] D_imm;
     wire[15:0] D_regData1, D_regData2;
     
     // EX Phase signals
     wire[2:0] Flag, FlagIn;
     wire[15:0] ALUSrc2;
-    wire[15:0] offset, shamt, loadByte;
+    wire[15:0] X_offset, X_shamt, X_loadByte;
     wire X_regWrite, X_memWrite, X_zEn, X_vEn, X_nEn, X_hlt;
     wire[1:0] X_writeSelect, X_ALUsrc;
     wire[3:0] X_Rs, X_Rt, X_Rd, X_ALUOp;
-    wire[7:0] X_imm;
     wire[15:0] X_regData1, X_regData2, X_incPC, X_ALUOut;
     
     // MEM Phase signals
@@ -89,28 +88,29 @@ module cpu (clk, rst_n, hlt, pc);
                             
     // PC Control Logic
     BranchControl BC(.C(D_instruction[11:9]), .I(D_instruction[8:0]), .F(Flag), .B(Branch), .regPC(D_regData1), .incPC(D_incPC), .branchPC(branchPC), .exBranch(exBranch));
+
+    // determine all the possible immediate inputs to ALU
+    assign D_offset = {{11{D_instruction[3]}}, D_instruction[3:0], 1'b0};
+    assign D_shamt  = {12'h000, D_instruction[3:0]};
+    assign D_loadByte = {8'h00, D_instruction};
     
     // ID/EX pipeline register
     D_X_register pipeReg2(.clk(clk), .rst(rst), .wen(Pwen), .D_regWrite(D_regWrite), .D_memWrite(D_memWrite), .D_writeSelect(D_writeSelect),
                     .D_zEn(D_zEn), .D_vEn(D_vEn), .D_nEn(D_nEn), .D_hlt(D_hlt), .D_ALUsrc(D_ALUsrc), .D_ALUOp(D_ALUOp), .D_Rs(D_Rs), .D_Rt(D_Rt),
-                    .D_Rd(D_Rd), .D_imm(D_imm), .D_regData1(D_regData1), .D_regData2(D_regData2), .D_PC(D_incPC), .X_regWrite(X_regWrite),
+                    .D_Rd(D_Rd), .D_offset(D_offset), .D_shamt(D_shamt), .D_loadByte(D_loadByte) .D_regData1(D_regData1), .D_regData2(D_regData2), .D_PC(D_incPC), .X_regWrite(X_regWrite),
                     .X_memWrite(X_memWrite), .X_writeSelect(X_writeSelect), .X_zEn(X_zEn), .X_vEn(X_vEn), .X_nEn(X_nEn), .X_hlt(X_hlt), .X_ALUsrc(X_ALUsrc),
-                    .X_ALUOp(X_ALUOp), .X_Rs(X_Rs), .X_Rt(X_Rt), .X_Rd(X_Rd), .X_imm(X_imm), .X_regData1(X_regData1), .X_regData2(X_regData2), .X_PC(X_incPC));
+                    .X_ALUOp(X_ALUOp), .X_Rs(X_Rs), .X_Rt(X_Rt), .X_Rd(X_Rd), .X_offset(X_offset), .X_shamt(X_shamt), .X_loadByte(X_loadByte), .X_regData1(X_regData1), .X_regData2(X_regData2), .X_PC(X_incPC));
                     
        
     /********************
     ** Execution Stage **
     ********************/
-    // determine all the possible immediate inputs to ALU
-    assign offset = {{11{X_imm[3]}}, X_imm[3:0], 1'b0};
-    assign shamt  = {12'h000, X_imm[3:0]};
-    assign loadByte = {8'h00, X_imm};
 	
     // ALUsrc MUX
     assign ALUSrc2 = (X_ALUsrc == 2'b00) ? X_regData2 :   // register Data
-                     (X_ALUsrc == 2'b01) ? shamt :        // zero extended immediate
-                     (X_ALUsrc == 2'b10) ? offset :       // offset for LW or SW
-                                         loadByte;      // 8-bit immediate
+                     (X_ALUsrc == 2'b01) ? X_shamt :        // zero extended immediate
+                     (X_ALUsrc == 2'b10) ? X_offset :       // offset for LW or SW
+                                         X_loadByte;      // 8-bit immediate
 
     // ALU
     alu iALU(.op1(X_regData1), .op2(ALUSrc2), .aluop(X_ALUOp), .Flag(FlagIn), .alu_out(X_ALUOut));
