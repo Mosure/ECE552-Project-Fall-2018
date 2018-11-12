@@ -1,7 +1,7 @@
-module Control(Op, RegRead, RegWrite, MemWrite, halt, zEn, vEn, nEn, ALUSrc, WriteSelect, Branch, ALUOp);
+module Control(Op, RegRead, RegWrite, MemRead, MemWrite, halt, zEn, vEn, nEn, ALUSrc, WriteSelect, Branch, ALUOp);
 			   
     input[3:0] Op;
-    output RegRead, RegWrite, MemWrite, halt, zEn, vEn, nEn;
+    output RegRead, RegWrite, MemRead, MemWrite, halt, zEn, vEn, nEn;
     output[1:0] ALUSrc, WriteSelect, Branch;
     output[3:0] ALUOp;
 				
@@ -45,6 +45,9 @@ module Control(Op, RegRead, RegWrite, MemWrite, halt, zEn, vEn, nEn, ALUSrc, Wri
     // MemWrite: 1 for SW, 0 otherwise
     assign MemWrite = Op[3] & ~Op[2] & ~Op[1] & Op[0];
     
+	// MemRead: 1 for LW, 0 otherwise
+	assign MemRead = Op[3] & ~Op[2] & ~Op[1] & ~Op[0];
+	
     // zEn: 1 for ADD, SUB, XOR, SLL, SRA, ROR, 0 otherwise
     assign zEn = (~Op[3] & ~Op[1]) | (~Op[3] & ~Op[0]);
     
