@@ -98,7 +98,7 @@ module cpu (clk, rst_n, hlt, pc);
     BranchControl BC(.C(D_instruction[11:9]), .I(D_instruction[8:0]), .F(Flag), .B(Branch), .regPC(D_regData1), .incPC(D_incPC), .branchPC(branchPC), .exBranch(exBranch));
 
     // Hazard Detection Unit
-    Hazard_Detection HDU(.X_memRead(X_memRead), .D_memWrite(D_memWrite), .X_Rt(X_Rt), .D_Rs(D_Rs), .D_Rt(D_Rt), .stall(stall), .opcode(D_instruction[15_12], .CC(D_instruction[11:9]);
+    Hazard_Detection HDU(.X_memRead(X_memRead), .D_memWrite(D_memWrite), .X_Rt(X_Rt), .D_Rs(D_Rs), .D_Rt(D_Rt), .stall(stall), .opcode(D_instruction[15:12]), .CC(D_instruction[11:9]));
 
     // determine all the possible immediate inputs to ALU
     assign D_offset = {{11{D_instruction[3]}}, D_instruction[3:0], 1'b0};
