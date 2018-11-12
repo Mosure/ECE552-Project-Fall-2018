@@ -43,17 +43,21 @@ module alu(op1,op2,aluop,Flag,alu_out);
     //Select which output to use
     always@(*) begin
         casex(aluop)
-            16'h0000: alu_out = out0; //ADD, LW, SW
-            16'h0001: alu_out = out0; //SUB
-            16'h0010: alu_out = out1; //XOR
-            16'h0011: alu_out = out2; //RED
-            16'h0100: alu_out = out3; //SLL
-            16'h0101: alu_out = out3; //SRA
-            16'h0110: alu_out = out3; //ROR 
-            16'h0111: alu_out = out4; //PADDSb
-            16'h1000: alu_out = out5; //LLB
-            16'h1001: alu_out = out6; //LHB
-            default: begin $display("Error default case of alu_out mux triggered"); alu_out = out0; end
+            4'b0000: alu_out = out0; //ADD, LW, SW
+            4'b0001: alu_out = out0; //SUB
+            4'b0010: alu_out = out1; //XOR
+            4'b0011: alu_out = out2; //RED
+            4'b0100: alu_out = out3; //SLL
+            4'b0101: alu_out = out3; //SRA
+            4'b0110: alu_out = out3; //ROR 
+            4'b0111: alu_out = out4; //PADDSb
+            4'b1000: alu_out = out5; //LLB
+            4'b1001: alu_out = out6; //LHB
+            4'b1100: alu_out = out0;
+            4'b1101: alu_out = out0;
+            4'b1110: alu_out = out0;
+            4'b1111: alu_out = out0;
+            default: begin $display("Error default case of alu_out mux triggered: %b", aluop); alu_out = out0; end
         endcase
     end
 endmodule
