@@ -66,7 +66,7 @@ module cpu (clk, rst_n, hlt, pc);
     
     // PC register stores the current pc
     // Don't write to PC if hlt in the IF stage
-    PCregister PC(.clk(clk), .rst(rst), .wen(~F_hlt | ~stall), .nextPC(next_pc), .PC(pc));
+    PCregister PC(.clk(clk), .rst(rst), .wen(~F_hlt & ~stall), .nextPC(next_pc), .PC(pc));
     
     // Instruction Memory
     memory1c IMEM(.clk(clk), .rst(rst), .data_in(16'hzzzz), .addr(pc), .enable(1'b1), .wr(1'b0),  .data_out(F_instruction));
