@@ -15,7 +15,8 @@ module cpu_ptb();
    wire [15:0] MemDataOut;	/* Written to Memory */
 
    wire        Halt;         /* Halt executed and in Memory or writeback stage */
-        
+   wire F_hlt, D_hlt, X_hlt, M_hlt, W_hlt, stall;        
+
    integer     inst_count;
    integer     cycle_count;
 
@@ -98,6 +99,7 @@ module cpu_ptb();
                   MemAddress,
                   MemDataIn,
 		  MemDataOut);
+        $fdisplay(sim_log_file, "REG:: F_hlt: %b D_hlt: %b X_hlt: %b M_hlt: %b W_hlt: %b Stall: %b", F_hlt, D_hlt, X_hlt, M_hlt, W_hlt, stall);
          if (RegWrite) begin
             $fdisplay(trace_file,"REG: %d VALUE: 0x%04x",
                       WriteRegister,
@@ -164,6 +166,14 @@ module cpu_ptb();
    
    assign MemDataOut = DUT.DMEM.data_out;
    // If there's a memory read in this cycle, this is the data being read out of memory (16 bits)
+
+   assign F_hlt = DUT.F_hlt;
+   assign D_hlt = DUT.D_hlt;
+   assign X_hlt = DUT.X_hlt;
+   assign M_hlt = DUT.M_hlt;
+   assign W_hlt = DUT.W_hlt;
+
+   assign stall = DUT.stall;
 
 
    /* Add anything else you want here */
