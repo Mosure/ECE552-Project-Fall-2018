@@ -1,15 +1,15 @@
-module D_X_register(clk, rst, wen, D_regWrite, D_memWrite, D_writeSelect, D_zEn, D_vEn, D_nEn, D_hlt, D_ALUsrc,
-                    D_ALUOp, D_Rs, D_Rt, D_Rd, D_offset, D_shamt, D_loadByte, D_regData1, D_regData2, D_PC, X_regWrite, X_memWrite, X_writeSelect,
+module D_X_register(clk, rst, wen, D_regWrite, D_memRead, D_memWrite, D_writeSelect, D_zEn, D_vEn, D_nEn, D_hlt, D_ALUsrc,
+                    D_ALUOp, D_Rs, D_Rt, D_Rd, D_offset, D_shamt, D_loadByte, D_regData1, D_regData2, D_PC, X_regWrite, X_memRead, X_memWrite, X_writeSelect,
                     X_zEn, X_vEn, X_nEn, X_hlt, X_ALUsrc, X_ALUOp, X_Rs, X_Rt, X_Rd, X_offset, X_shamt, X_loadByte, X_regData1, X_regData2, X_PC);
     input clk, rst, wen;
-    input D_regWrite, D_memWrite, D_hlt; 
+    input D_regWrite, D_memRead, D_memWrite, D_hlt; 
     input D_zEn, D_vEn, D_nEn;
     input[1:0] D_ALUsrc, D_writeSelect;
     input[3:0] D_ALUOp, D_Rs, D_Rt, D_Rd;
 	input[15:0] D_offset, D_shamt, D_loadByte;
     input[15:0] D_regData1, D_regData2, D_PC;
 	
-    output X_regWrite, X_memWrite, X_hlt;
+    output X_regWrite, X_memRead, X_memWrite, X_hlt;
     output X_zEn, X_vEn, X_nEn;
     output[1:0] X_ALUsrc, X_writeSelect;
     output[3:0] X_ALUOp, X_Rs, X_Rt, X_Rd;
@@ -30,6 +30,7 @@ module D_X_register(clk, rst, wen, D_regWrite, D_memWrite, D_writeSelect, D_zEn,
    
     // Signals needed at MEM stage
     dff memWrite(.clk(clk), .rst(rst), .wen(wen), .d(D_memWrite), .q(X_memWrite));
+	dff memRead(.clk(clk), .rst(rst), .wen(wen), .d(D_memRead), .q(X_memRead));
     reg_16bit regData2(.clk(clk), .rst(rst), .wen(wen), .d(D_regData2), .q(X_regData2));
     
     // Signals needed at WB stage
