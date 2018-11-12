@@ -19,11 +19,12 @@ module cpu (clk, rst_n, hlt, pc);
     wire[1:0] Branch;
     wire[15:0] D_instruction, D_incPC;
     wire[15:0] D_offset, D_shamt, D_loadByte;
-    wire D_regWrite, D_memWrite, D_zEn, D_vEn, D_nEn, D_hlt;
+    wire D_regWrite, D_memRead, D_memWrite, D_zEn, D_vEn, D_nEn, D_hlt;
     wire[1:0] D_ALUsrc, D_writeSelect;
     wire[3:0] D_ALUOp, D_Rs, D_Rt, D_Rd;
     wire[15:0] D_regData1, D_regData2;
-    
+    wire stall;
+	
     // EX Phase signals
 	wire[1:0] forwardA, forwardB;
 	wire MMforward;
@@ -31,7 +32,7 @@ module cpu (clk, rst_n, hlt, pc);
     wire[15:0] ALUSrcMuxOut;
 	wire[15:0] ALUSrc1, ALUSrc2;
     wire[15:0] X_offset, X_shamt, X_loadByte;
-    wire X_regWrite, X_memWrite, X_zEn, X_vEn, X_nEn, X_hlt;
+    wire X_regWrite, X_memRead, X_memWrite, X_zEn, X_vEn, X_nEn, X_hlt;
     wire[1:0] X_writeSelect, X_ALUsrc;
     wire[3:0] X_Rs, X_Rt, X_Rd, X_ALUOp;
     wire[15:0] X_regData1, X_regData2, X_incPC, X_ALUOut;
@@ -71,8 +72,8 @@ module cpu (clk, rst_n, hlt, pc);
     // PC Incrementer
     cla_16bit PCinc(.a(pc), .b(16'h0002), .cin(1'b0), .sum(F_incPC), .cout());
     
-    // IF/ID pipeline register
-    F_D_register pipeReg1(.clk(clk), .rst(rst), .wen(Pwen), .F_instruction(F_instruction), .F_incPC(F_incPC), .D_instruction(D_instruction), .D_incPC(D_incPC));
+    // IF/ID pipeline register : Write enable condition is ~stall. Freeze the contents of the register if stall is asserted
+    F_D_register pipeReg1(.clk(clk), .rst(rst), .wen(~stall), .F_instruction(F_instruction), .F_incPC(F_incPC), .D_instruction(D_instruction), .D_incPC(D_incPC));
     
     /*****************************
     ** Instruction Decode Stage **
@@ -87,22 +88,25 @@ module cpu (clk, rst_n, hlt, pc);
                             .WriteReg(W_RegWrite), .DstData(DstData), .SrcData1(D_regData1), .SrcData2(D_regData2));
 	
     // Global Control Logic
-    Control GlobalControl(.Op(D_instruction[15:12]), .RegRead(RegRead), .RegWrite(W_regWrite), .MemWrite(D_memWrite), .halt(hlt), .ALUSrc(D_ALUsrc),
+    Control GlobalControl(.Op(D_instruction[15:12]), .RegRead(RegRead), .RegWrite(W_regWrite), .MemRead(D_memRead), .MemWrite(D_memWrite), .halt(hlt), .ALUSrc(D_ALUsrc),
                             .Branch(Branch), .WriteSelect(D_writeSelect), .ALUOp(D_ALUOp), .zEn(D_zEn), .vEn(D_vEn), .nEn(D_nEn));
                             
     // PC Control Logic
     BranchControl BC(.C(D_instruction[11:9]), .I(D_instruction[8:0]), .F(Flag), .B(Branch), .regPC(D_regData1), .incPC(D_incPC), .branchPC(branchPC), .exBranch(exBranch));
-
+	
+	// Hazard Detection Unit
+	Hazard_Detection HDU(.X_memRead(X_memRead), .D_memWrite(D_memWrite), .X_Rt(X_Rt), .D_Rs(D_Rs), .D_Rt(D_Rt), .stall(stall));
+	
     // determine all the possible immediate inputs to ALU
     assign D_offset = {{11{D_instruction[3]}}, D_instruction[3:0], 1'b0};
     assign D_shamt  = {12'h000, D_instruction[3:0]};
     assign D_loadByte = {8'h00, D_instruction};
     
-    // ID/EX pipeline register
-    D_X_register pipeReg2(.clk(clk), .rst(rst), .wen(Pwen), .D_regWrite(D_regWrite), .D_memWrite(D_memWrite), .D_writeSelect(D_writeSelect),
+    // ID/EX pipeline register : reset condition is rst|stall. Insert nop if stall is asserted.
+    D_X_register pipeReg2(.clk(clk), .rst(rst|stall), .wen(1'b1), .D_regWrite(D_regWrite), .D_memRead(D_memRead), .D_memWrite(D_memWrite), .D_writeSelect(D_writeSelect),
                     .D_zEn(D_zEn), .D_vEn(D_vEn), .D_nEn(D_nEn), .D_hlt(D_hlt), .D_ALUsrc(D_ALUsrc), .D_ALUOp(D_ALUOp), .D_Rs(D_Rs), .D_Rt(D_Rt),
                     .D_Rd(D_Rd), .D_offset(D_offset), .D_shamt(D_shamt), .D_loadByte(D_loadByte), .D_regData1(D_regData1), .D_regData2(D_regData2), .D_PC(D_incPC), .X_regWrite(X_regWrite),
-                    .X_memWrite(X_memWrite), .X_writeSelect(X_writeSelect), .X_zEn(X_zEn), .X_vEn(X_vEn), .X_nEn(X_nEn), .X_hlt(X_hlt), .X_ALUsrc(X_ALUsrc),
+                    .X_memRead(X_memRead), .X_memWrite(X_memWrite), .X_writeSelect(X_writeSelect), .X_zEn(X_zEn), .X_vEn(X_vEn), .X_nEn(X_nEn), .X_hlt(X_hlt), .X_ALUsrc(X_ALUsrc),
                     .X_ALUOp(X_ALUOp), .X_Rs(X_Rs), .X_Rt(X_Rt), .X_Rd(X_Rd), .X_offset(X_offset), .X_shamt(X_shamt), .X_loadByte(X_loadByte), .X_regData1(X_regData1), .X_regData2(X_regData2), .X_PC(X_incPC));
                        
     /********************
@@ -137,7 +141,7 @@ module cpu (clk, rst_n, hlt, pc);
     FlagRegisters flags(.clk(clk), .rst(rst), .FlagIn(FlagIn), .zEn(X_zEn), .vEn(X_vEn), .nEn(X_nEn), .FlagOut(Flag));
     
     // EX/MEM pipeline register
-    X_M_register pipeReg3(.clk(clk), .rst(rst), .wen(Pwen), .X_regWrite(X_regWrite), .X_memWrite(X_memWrite), .X_hlt(X_hlt), 
+    X_M_register pipeReg3(.clk(clk), .rst(rst), .wen(1'b1), .X_regWrite(X_regWrite), .X_memWrite(X_memWrite), .X_hlt(X_hlt), 
                     .X_writeSelect(X_writeSelect), .X_Rs(X_Rs), .X_Rt(X_Rt), .X_Rd(X_Rd), .X_regData2(X_regData2),
                     .X_aluOut(X_ALUOut), .X_PC(X_incPC), .M_regWrite(M_regWrite), .M_memWrite(M_memWrite), .M_hlt(M_hlt),
                     .M_writeSelect(M_writeSelect), .M_Rs(M_Rs), .M_Rt(M_Rt), .M_Rd(M_Rd), .M_regData2(M_regData2),
@@ -155,7 +159,7 @@ module cpu (clk, rst_n, hlt, pc);
     memory1c DMEM(.clk(clk), .rst(rst), .data_in(DMEM_In), .addr(M_ALUOut), .enable(1'b1), .wr(M_MemWrite), .data_out(M_DMemOut));
     
     // MEM/WB pipeline register
-    M_W_register pipeReg4(.clk(clk), .rst(rst), .wen(Pwen), .M_regWrite(M_regWrite), .M_hlt(M_hlt), .M_writeSelect(M_writeSelect), .M_Rs(M_Rs),
+    M_W_register pipeReg4(.clk(clk), .rst(rst), .wen(1'b1), .M_regWrite(M_regWrite), .M_hlt(M_hlt), .M_writeSelect(M_writeSelect), .M_Rs(M_Rs),
                     .M_Rt(M_Rt), .M_Rd(M_Rd), .M_ALUOut(M_ALUOut), .M_DMemOut(M_DMemOut), .M_PC(M_incPC), .W_regWrite(W_regWrite), .W_hlt(W_hlt),
                     .W_writeSelect(W_writeSelect), .W_Rs(W_Rs), .W_Rt(W_Rt), .W_Rd(W_Rd), .W_ALUOut(W_ALUOut), .W_DMemOut(W_DMemOut), .W_PC(W_incPC));
                     
