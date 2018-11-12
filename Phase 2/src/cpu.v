@@ -86,9 +86,11 @@ module cpu (clk, rst_n, hlt, pc);
 
     assign D_Rt = (D_memWrite) ? D_instruction[11:8] : D_instruction[3:0];
 
+    assign D_Rd = D_instruction[11:8];
+
     // 16 register Register File
-    RegisterFile registers(.clk(clk), .rst(rst), .SrcReg1(D_Rs), .SrcReg2(D_Rt), .DstReg(D_instruction[11:8]),
-                            .WriteReg(D_regWrite), .DstData(DstData), .SrcData1(D_regData1), .SrcData2(D_regData2));
+    RegisterFile registers(.clk(clk), .rst(rst), .SrcReg1(D_Rs), .SrcReg2(D_Rt), .DstReg(W_Rd),
+                            .WriteReg(W_regWrite), .DstData(DstData), .SrcData1(D_regData1), .SrcData2(D_regData2));
 
     // Global Control Logic
     Control GlobalControl(.Op(D_instruction[15:12]), .RegRead(RegRead), .RegWrite(D_regWrite), .MemRead(D_memRead), .MemWrite(D_memWrite), .halt(D_hlt), .ALUSrc(D_ALUsrc),
