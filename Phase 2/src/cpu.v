@@ -9,6 +9,7 @@ module cpu (clk, rst_n, hlt, pc);
     wire[15:0] F_instruction;
     wire[15:0] next_pc;
     wire[15:0] F_incPC;
+    wire       F_hlt;
     
     // Branch signals
     wire[15:0] branchPC;
@@ -61,10 +62,11 @@ module cpu (clk, rst_n, hlt, pc);
     
     // PC Src Mux
     assign next_pc = (exBranch) ? branchPC : F_incPC;
+    assign F_hlt = &F_instruction[15:12] & ~exBranch; // Check for HLT, allow PCregister to increment if the branch is taken
     
     // PC register stores the current pc
-    /* TODO: Change how Halt effects the PC */
-    PCregister PC(.clk(clk), .rst(rst), .wen(~hlt), .nextPC(next_pc), .PC(pc));
+    // Don't write to PC if hlt in the IF stage
+    PCregister PC(.clk(clk), .rst(rst), .wen(~F_hlt), .nextPC(next_pc), .PC(pc));
     
     // Instruction Memory
     memory1c IMEM(.clk(clk), .rst(rst), .data_in(16'hzzzz), .addr(pc), .enable(1'b1), .wr(1'b0),  .data_out(F_instruction));
@@ -73,7 +75,8 @@ module cpu (clk, rst_n, hlt, pc);
     cla_16bit PCinc(.a(pc), .b(16'h0002), .cin(1'b0), .sum(F_incPC), .cout());
     
     // IF/ID pipeline register : Write enable condition is ~stall. Freeze the contents of the register if stall is asserted
-    F_D_register pipeReg1(.clk(clk), .rst(rst), .wen(~stall), .F_instruction(F_instruction), .F_incPC(F_incPC), .D_instruction(D_instruction), .D_incPC(D_incPC));
+    // Flush the IF register if branch is taken
+    F_D_register pipeReg1(.clk(clk), .rst(rst | exBranch), .wen(~stall), .F_instruction(F_instruction), .F_incPC(F_incPC), .D_instruction(D_instruction), .D_incPC(D_incPC));
     
     /*****************************
     ** Instruction Decode Stage **
@@ -88,7 +91,7 @@ module cpu (clk, rst_n, hlt, pc);
                             .WriteReg(W_RegWrite), .DstData(DstData), .SrcData1(D_regData1), .SrcData2(D_regData2));
 	
     // Global Control Logic
-    Control GlobalControl(.Op(D_instruction[15:12]), .RegRead(RegRead), .RegWrite(W_regWrite), .MemRead(D_memRead), .MemWrite(D_memWrite), .halt(hlt), .ALUSrc(D_ALUsrc),
+    Control GlobalControl(.Op(D_instruction[15:12]), .RegRead(RegRead), .RegWrite(W_regWrite), .MemRead(D_memRead), .MemWrite(D_memWrite), .halt(D_hlt), .ALUSrc(D_ALUsrc),
                             .Branch(Branch), .WriteSelect(D_writeSelect), .ALUOp(D_ALUOp), .zEn(D_zEn), .vEn(D_vEn), .nEn(D_nEn));
                             
     // PC Control Logic
