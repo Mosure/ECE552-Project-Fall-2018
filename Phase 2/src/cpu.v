@@ -176,5 +176,6 @@ module cpu (clk, rst_n, hlt, pc);
                      (W_writeSelect == 2'b10) ? W_incPC : 
                                               16'h0000;  
 
+    assign hlt = W_hlt;
     
 endmodule
