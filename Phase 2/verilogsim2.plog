@@ -1,33 +1,18 @@
 SIMLOG:: Cycle           2 PC:     0002 I:     a151 R: 1   0     0000 M: x x     0000     0000     XXXX
-REG:: F_hlt: 0 D_hlt: 0 X_hlt: 0 M_hlt: 0 W_hlt: 0 Stall: 0
 SIMLOG:: Cycle           4 PC:     0002 I:     b151 R: 1   1     0000 M: x x     0000     0000     XXXX
-REG:: F_hlt: 0 D_hlt: 0 X_hlt: 0 M_hlt: 0 W_hlt: 0 Stall: 0
 SIMLOG:: Cycle           4 PC:     0006 I:     a2b0 R: 1   1     0000 M: x x     00XX     0000     XXXX
-REG:: F_hlt: 0 D_hlt: 0 X_hlt: 0 M_hlt: 0 W_hlt: 0 Stall: 0
 SIMLOG:: Cycle           6 PC:     0006 I:     b200 R: 1   2     0000 M: x x     00XX     0000     xxxx
-REG:: F_hlt: 0 D_hlt: 0 X_hlt: 0 M_hlt: 0 W_hlt: 0 Stall: 0
 SIMLOG:: Cycle           6 PC:     000a I:     a304 R: 1   2     00XX M: x x     XXxX     0000     xxxx
-REG:: F_hlt: 0 D_hlt: 0 X_hlt: 0 M_hlt: 0 W_hlt: 0 Stall: 0
 SIMLOG:: Cycle           8 PC:     000a I:     b300 R: 1   3     XXXX M: x x     XXxX     0000     xxxx
-REG:: F_hlt: 0 D_hlt: 0 X_hlt: 0 M_hlt: 0 W_hlt: 0 Stall: 0
 SIMLOG:: Cycle           8 PC:     000e I:     9122 R: 1   3     XXxX M: x x     xXxX     0000     xxxx
-REG:: F_hlt: 0 D_hlt: 0 X_hlt: 0 M_hlt: 0 W_hlt: 0 Stall: 0
 SIMLOG:: Cycle          10 PC:     000e I:     0523 R: 0   1     xXxX M: x x     xXxX     0000     xxxx
-REG:: F_hlt: 0 D_hlt: 0 X_hlt: 0 M_hlt: 0 W_hlt: 0 Stall: 0
 SIMLOG:: Cycle          10 PC:     0012 I:     8450 R: 1   5     xXxX M: x x     xxxx     0000     xxxx
-REG:: F_hlt: 0 D_hlt: 0 X_hlt: 0 M_hlt: 0 W_hlt: 0 Stall: 0
 SIMLOG:: Cycle          12 PC:     0012 I:     9452 R: 1   4     xXxX M: x x     xxxx     xXxX     xxxx
-REG:: F_hlt: 0 D_hlt: 0 X_hlt: 0 M_hlt: 0 W_hlt: 0 Stall: 0
 SIMLOG:: Cycle          12 PC:     0016 I:     7542 R: 0   4     xxxx M: x x     xxxx     XXxX     xxxx
-REG:: F_hlt: 0 D_hlt: 0 X_hlt: 0 M_hlt: 0 W_hlt: 0 Stall: 0
 SIMLOG:: Cycle          14 PC:     0016 I:     3555 R: 1   5     xxxx M: x x     xxxx     xxxx     xxxx
-REG:: F_hlt: 0 D_hlt: 0 X_hlt: 0 M_hlt: 0 W_hlt: 0 Stall: 0
 SIMLOG:: Cycle          14 PC:     0018 I:     f000 R: 1   5     xxxx M: x x     xxxx     xxxx     xxxx
-REG:: F_hlt: 1 D_hlt: 0 X_hlt: 0 M_hlt: 0 W_hlt: 0 Stall: 0
 SIMLOG:: Cycle          16 PC:     0018 I:     f000 R: 0   0     xxxx M: x x     xxxx     00XX     xxxx
-REG:: F_hlt: 1 D_hlt: 1 X_hlt: 0 M_hlt: 0 W_hlt: 0 Stall: 0
 SIMLOG:: Cycle          16 PC:     0018 I:     f000 R: 0   0     xxxx M: x x     xxxx     xxxx     xxxx
-REG:: F_hlt: 1 D_hlt: 1 X_hlt: 1 M_hlt: 1 W_hlt: 1 Stall: 0
 SIMLOG:: Processor halted
 
 SIMLOG:: sim_cycles          16

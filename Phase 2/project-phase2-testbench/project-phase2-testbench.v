@@ -99,7 +99,7 @@ module cpu_ptb();
                   MemAddress,
                   MemDataIn,
 		  MemDataOut);
-        $fdisplay(sim_log_file, "REG:: F_hlt: %b D_hlt: %b X_hlt: %b M_hlt: %b W_hlt: %b Stall: %b", F_hlt, D_hlt, X_hlt, M_hlt, W_hlt, stall);
+        //$fdisplay(sim_log_file, "REG:: F_hlt: %b D_hlt: %b X_hlt: %b M_hlt: %b W_hlt: %b Stall: %b", F_hlt, D_hlt, X_hlt, M_hlt, W_hlt, stall);
          if (RegWrite) begin
             $fdisplay(trace_file,"REG: %d VALUE: 0x%04x",
                       WriteRegister,
