@@ -83,6 +83,7 @@ module cpu_ptb();
 
   /* Stats */
    always @ (posedge clk) begin
+   #10;
       if (rst_n) begin
          if (Halt || RegWrite || MemWrite) begin
             inst_count = inst_count + 1;
