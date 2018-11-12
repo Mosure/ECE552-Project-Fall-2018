@@ -88,10 +88,10 @@ module cpu (clk, rst_n, hlt, pc);
 
     // 16 register Register File
     RegisterFile registers(.clk(clk), .rst(rst), .SrcReg1(D_Rs), .SrcReg2(D_Rt), .DstReg(D_instruction[11:8]),
-                            .WriteReg(W_RegWrite), .DstData(DstData), .SrcData1(D_regData1), .SrcData2(D_regData2));
+                            .WriteReg(D_regWrite), .DstData(DstData), .SrcData1(D_regData1), .SrcData2(D_regData2));
 
     // Global Control Logic
-    Control GlobalControl(.Op(D_instruction[15:12]), .RegRead(RegRead), .RegWrite(W_regWrite), .MemRead(D_memRead), .MemWrite(D_memWrite), .halt(D_hlt), .ALUSrc(D_ALUsrc),
+    Control GlobalControl(.Op(D_instruction[15:12]), .RegRead(RegRead), .RegWrite(D_regWrite), .MemRead(D_memRead), .MemWrite(D_memWrite), .halt(D_hlt), .ALUSrc(D_ALUsrc),
                             .Branch(Branch), .WriteSelect(D_writeSelect), .ALUOp(D_ALUOp), .zEn(D_zEn), .vEn(D_vEn), .nEn(D_nEn));
                             
     // PC Control Logic
