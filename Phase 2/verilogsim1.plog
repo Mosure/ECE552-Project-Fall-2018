@@ -1,17 +1,17 @@
-SIMLOG:: Cycle           2 PC:     0000 I:     a151 R: 0   0     0000 M: x x     0000     0000     XXXX
-SIMLOG:: Cycle           3 PC:     0002 I:     b151 R: 1   0     0000 M: x x     0000     0000     XXXX
-SIMLOG:: Cycle           4 PC:     0004 I:     a2b0 R: 1   0     0000 M: x x     0000     0000     XXXX
-SIMLOG:: Cycle           5 PC:     0006 I:     b2a0 R: 1   0     0000 M: x x     0051     0000     xxxx
-SIMLOG:: Cycle           6 PC:     0008 I:     0321 R: 1   1     0051 M: x x     5151     0000     xxxx
-SIMLOG:: Cycle           7 PC:     000a I:     1412 R: 1   1     5151 M: x x     00b0     0000     xxxx
-SIMLOG:: Cycle           8 PC:     000c I:     2634 R: 1   2     00b0 M: x x     a0b0     0000     xxxx
-SIMLOG:: Cycle           9 PC:     000e I:     4756 R: 1   2     a0b0 M: x x     f201     5151     xxxx
-SIMLOG:: Cycle          10 PC:     0010 I:     5862 R: 1   3     f201 M: x x     xxxx     00b0     xxxx
-SIMLOG:: Cycle          11 PC:     0012 I:     698a R: 1   4     xxxx M: x x     xxxx     0000     xxxx
-SIMLOG:: Cycle          12 PC:     0014 I:     f000 R: 1   6     xxxx M: x x     0000     0000     XXXX
-SIMLOG:: Cycle          13 PC:     0014 I:     f000 R: 1   7     0000 M: x x     xxxx     a0b0     xxxx
-SIMLOG:: Cycle          14 PC:     0014 I:     f000 R: 1   8     xxxx M: x x     xxxx     0000     xxxx
-SIMLOG:: Cycle          15 PC:     0014 I:     f000 R: 0   9     xxxx M: x x     1000     0000     xxxx
+SIMLOG:: Cycle           2 PC:     0000 I:     a151 R: 0   0     0000 M: x x     0000     0000     XXXX S: 0 A: 0000     0000     0000     0000
+SIMLOG:: Cycle           3 PC:     0002 I:     b151 R: 1   0     0000 M: x x     0000     0000     XXXX S: 0 A: 0000     0000     0000     0000
+SIMLOG:: Cycle           4 PC:     0004 I:     a2b0 R: 1   0     0000 M: x x     0000     0000     XXXX S: 0 A: 1000     0000     a151     0051
+SIMLOG:: Cycle           5 PC:     0006 I:     b2a0 R: 1   0     0000 M: x x     0051     0000     xxxx S: 0 A: 1001     0051     0051     5151
+SIMLOG:: Cycle           6 PC:     0008 I:     0321 R: 1   1     0051 M: x x     5151     0000     xxxx S: 0 A: 1000     0000     a2b0     00b0
+SIMLOG:: Cycle           7 PC:     000a I:     1412 R: 1   1     5151 M: x x     00b0     0000     xxxx S: 0 A: 1001     00b0     b2a0     a0b0
+SIMLOG:: Cycle           8 PC:     000c I:     2634 R: 1   2     00b0 M: x x     a0b0     0000     xxxx S: 0 A: 0000     a0b0     5151     f201
+SIMLOG:: Cycle           9 PC:     000e I:     4756 R: 1   2     a0b0 M: x x     f201     5151     xxxx S: 0 A: 0001     5151     a0b0     7fff
+SIMLOG:: Cycle          10 PC:     0010 I:     5862 R: 1   3     f201 M: x x     7fff     00b0     xxxx S: 0 A: 0010     f201     7fff     8dfe
+SIMLOG:: Cycle          11 PC:     0012 I:     698a R: 1   4     7fff M: x x     8dfe     0000     xxxx S: 0 A: 0100     0000     8dfe     0000
+SIMLOG:: Cycle          12 PC:     0014 I:     f000 R: 1   6     8dfe M: x x     0000     0000     XXXX S: 0 A: 0101     8dfe     0002     e37f
+SIMLOG:: Cycle          13 PC:     0014 I:     f000 R: 1   7     0000 M: x x     e37f     a0b0     xxxx S: 0 A: 0110     e37f     000a     dff8
+SIMLOG:: Cycle          14 PC:     0014 I:     f000 R: 1   8     e37f M: x x     dff8     0000     xxxx S: 0 A: 1101     0000     f000     1000
+SIMLOG:: Cycle          15 PC:     0014 I:     f000 R: 0   9     dff8 M: x x     1000     0000     xxxx S: 0 A: 1101     0000     f000     1000
 SIMLOG:: Processor halted
 
 SIMLOG:: sim_cycles          15

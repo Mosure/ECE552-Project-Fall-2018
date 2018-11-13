@@ -88,7 +88,7 @@ module cpu_ptb();
          if (Halt || RegWrite || MemWrite) begin
             inst_count = inst_count + 1;
          end
-         $fdisplay(sim_log_file, "SIMLOG:: Cycle %d PC: %8x I: %8x R: %d %3d %8x M: %d %d %8x %8x %8x",
+         $fdisplay(sim_log_file, "SIMLOG:: Cycle %d PC: %8x I: %8x R: %d %3d %8x M: %d %d %8x %8x %8x S: %b A: %b %8x %8x %8x",
                   cycle_count,
                   PC,
                   Inst,
@@ -99,7 +99,7 @@ module cpu_ptb();
                   MemWrite,
                   MemAddress,
                   MemDataIn,
-		  MemDataOut);
+		  MemDataOut, stall, DUT.X_ALUOp, DUT.ALUSrc1, DUT.ALUSrc2, DUT.X_ALUOut);
         //$fdisplay(sim_log_file, "REG:: F_hlt: %b D_hlt: %b X_hlt: %b M_hlt: %b W_hlt: %b Stall: %b", F_hlt, D_hlt, X_hlt, M_hlt, W_hlt, stall);
          if (RegWrite) begin
             $fdisplay(trace_file,"REG: %d VALUE: 0x%04x",
