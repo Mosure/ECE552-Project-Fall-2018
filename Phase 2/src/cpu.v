@@ -76,7 +76,7 @@ module cpu (clk, rst_n, hlt, pc);
     
     // IF/ID pipeline register : Write enable condition is ~stall. Freeze the contents of the register if stall is asserted
     // Flush the IF register if branch is taken
-    F_D_register pipeReg1(.clk(clk), .rst(rst | exBranch), .wen(~stall), .F_instruction(F_instruction), .F_incPC(F_incPC), .D_instruction(D_instruction), .D_incPC(D_incPC));
+    F_D_register pipeReg1(.clk(clk), .rst(rst), .wen(~stall), .F_instruction(F_instruction), .F_incPC(F_incPC), .D_instruction(D_instruction), .D_incPC(D_incPC));
     
     /*****************************
     ** Instruction Decode Stage **
@@ -108,7 +108,7 @@ module cpu (clk, rst_n, hlt, pc);
     assign D_loadByte = {8'h00, D_instruction};
     
     // ID/EX pipeline register : reset condition is rst|stall. Insert nop if stall is asserted.
-    D_X_register pipeReg2(.clk(clk), .rst(rst|stall), .wen(1'b1), .D_regWrite(D_regWrite), .D_memRead(D_memRead), .D_memWrite(D_memWrite), .D_writeSelect(D_writeSelect),
+    D_X_register pipeReg2(.clk(clk), .rst(rst|stall | exBranch), .wen(1'b1), .D_regWrite(D_regWrite), .D_memRead(D_memRead), .D_memWrite(D_memWrite), .D_writeSelect(D_writeSelect),
                     .D_zEn(D_zEn), .D_vEn(D_vEn), .D_nEn(D_nEn), .D_hlt(D_hlt), .D_ALUsrc(D_ALUsrc), .D_ALUOp(D_ALUOp), .D_Rs(D_Rs), .D_Rt(D_Rt),
                     .D_Rd(D_Rd), .D_offset(D_offset), .D_shamt(D_shamt), .D_loadByte(D_loadByte), .D_regData1(D_regData1), .D_regData2(D_regData2), .D_PC(D_incPC), .X_regWrite(X_regWrite),
                     .X_memRead(X_memRead), .X_memWrite(X_memWrite), .X_writeSelect(X_writeSelect), .X_zEn(X_zEn), .X_vEn(X_vEn), .X_nEn(X_nEn), .X_hlt(X_hlt), .X_ALUsrc(X_ALUsrc),

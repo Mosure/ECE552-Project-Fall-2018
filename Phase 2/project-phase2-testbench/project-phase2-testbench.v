@@ -88,11 +88,12 @@ module cpu_ptb();
          if (Halt || RegWrite || MemWrite) begin
             inst_count = inst_count + 1;
          end
-         $fdisplay(sim_log_file, "SIMLOG:: Cycle %d PC: %8x I: %8x R: %d %3d %8x M: %d %d %8x %8x %8x S: %b A: %b %8x %8x %8x",
+         $fdisplay(sim_log_file, "SIMLOG:: Cycle %d PC: %8x I: %8x R: %d %b %3d %8x M: %d %d %8x %8x %8x S: %b A: %b %8x %8x %8x",
                   cycle_count,
                   PC,
                   Inst,
                   RegWrite,
+                  DUT.W_regWrite,
                   WriteRegister,
                   WriteData,
                   MemRead,
