@@ -125,7 +125,7 @@ module cpu (clk, rst_n, hlt, pc);
                                                 X_loadByte;      // 8-bit immediate
 
     // Forwarding Unit
-    Forwarding_Unit FwdUnit(.M_regWrite(M_regWrite), .W_regWrite(W_RegWrite), .M_memWrite(M_memWrite), .M_Rd(M_Rd), .W_Rd(W_Rd),
+    Forwarding_Unit FwdUnit(.M_regWrite(M_regWrite), .W_regWrite(W_regWrite), .M_memWrite(M_memWrite), .M_Rd(M_Rd), .W_Rd(W_Rd),
                             .X_Rs(X_Rs), .X_Rt(X_Rt), .M_Rt(M_Rt), .forwardA(forwardA), .forwardB(forwardB), .MMforward(MMforward));
 
     // Forwarding MUXes
