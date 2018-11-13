@@ -160,7 +160,7 @@ module cpu (clk, rst_n, hlt, pc);
     assign DMEM_In = MMforward ? DstData : M_regData2; 
 
     // Data Memory
-    memory1c DMEM(.clk(clk), .rst(rst), .data_in(DMEM_In), .addr(M_ALUOut), .enable(1'b1), .wr(M_MemWrite), .data_out(M_DMemOut));
+    memory1c DMEM(.clk(clk), .rst(rst), .data_in(DMEM_In), .addr(M_ALUOut), .enable(1'b1), .wr(M_memWrite), .data_out(M_DMemOut));
     
     // MEM/WB pipeline register
     M_W_register pipeReg4(.clk(clk), .rst(rst), .wen(1'b1), .M_regWrite(M_regWrite), .M_hlt(M_hlt), .M_writeSelect(M_writeSelect), .M_Rs(M_Rs),
