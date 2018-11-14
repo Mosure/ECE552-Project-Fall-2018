@@ -52,7 +52,7 @@ module memory1c (data_out, data_in, addr, enable, wr, clk, rst);
       if (rst) begin
          //load loadfile_all.img
          if (!loaded) begin
-            $readmemh("C:/altera/16.0/ECE552-Project-Fall-2018-master/ECE552-Project-Fall-2018-master/Phase 2/project-phase2-testcases/loadfile_all2.img", mem);
+            $readmemh("C:/altera/16.0/ECE552-Project-Fall-2018-master/ECE552-Project-Fall-2018-master/Phase 2/project-phase2-testcases/loadfile_all1.img", mem);
             loaded = 1;
          end
           

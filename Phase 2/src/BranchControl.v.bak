@@ -53,7 +53,7 @@ module BranchControl(C, I, F, B, regPC, incPC, branchPC, exBranch);
     cla_16bit PCadder(.a(incPC), .b(I_shifted), .cin(1'b0), .sum(offsetPC), .cout());
     
     // Determine what the branch PC would be
-    assign branchPC = B[0] ? regPC : offsetPC;
+    assign branchPC = B[0] ? offsetPC : regPC;
     
 endmodule
     
