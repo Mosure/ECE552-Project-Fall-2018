@@ -41,8 +41,8 @@ module cpu_ptb();
       $display("Hello world...simulation starting");
       $display("See verilogsim.plog and verilogsim.ptrace for output");
       inst_count = 0;
-      trace_file = $fopen("verilogsim.ptrace");
-      sim_log_file = $fopen("verilogsim.plog");
+      trace_file = $fopen("C:/altera/16.0/ECE552-Project-Fall-2018-master/ECE552-Project-Fall-2018-master/Phase 2/verilogsim3.ptrace");
+      sim_log_file = $fopen("C:/altera/16.0/ECE552-Project-Fall-2018-master/ECE552-Project-Fall-2018-master/Phase 2/verilogsim3.plog");
       
    end
 
@@ -88,19 +88,18 @@ module cpu_ptb();
          if (Halt || RegWrite || MemWrite) begin
             inst_count = inst_count + 1;
          end
-         $fdisplay(sim_log_file, "SIMLOG:: Cycle %d PC: %8x I: %8x R: %d %b %3d %8x M: %d %d %8x %8x %8x S: %b A: %b %8x %8x %8x",
+         $fdisplay(sim_log_file, "SIMLOG:: Cycle %d PC: %8x I: %8x R: %d %3d %8x M: %d %d %8x %8x %8x",
                   cycle_count,
                   PC,
                   Inst,
                   RegWrite,
-                  DUT.W_regWrite,
                   WriteRegister,
                   WriteData,
                   MemRead,
                   MemWrite,
                   MemAddress,
                   MemDataIn,
-		  MemDataOut, stall, DUT.X_ALUOp, DUT.ALUSrc1, DUT.ALUSrc2, DUT.X_ALUOut);
+		  MemDataOut);
         //$fdisplay(sim_log_file, "REG:: F_hlt: %b D_hlt: %b X_hlt: %b M_hlt: %b W_hlt: %b Stall: %b", F_hlt, D_hlt, X_hlt, M_hlt, W_hlt, stall);
          if (RegWrite) begin
             $fdisplay(trace_file,"REG: %d VALUE: 0x%04x",

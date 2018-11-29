@@ -24,7 +24,7 @@ module cpu (clk, rst_n, hlt, pc);
     wire[1:0] D_ALUsrc, D_writeSelect;
     wire[3:0] D_ALUOp, D_Rs, D_Rt, D_Rd;
     wire[15:0] D_regData1, D_regData2;
-    wire stall;
+    wire stall,flush;
 
     // EX Phase signals
     wire[1:0] forwardA, forwardB;
@@ -76,7 +76,7 @@ module cpu (clk, rst_n, hlt, pc);
     
     // IF/ID pipeline register : Write enable condition is ~stall. Freeze the contents of the register if stall is asserted
     // Flush the IF register if branch is taken
-    F_D_register pipeReg1(.clk(clk), .rst(rst|exBranch), .wen(~stall), .F_instruction(F_instruction), .F_incPC(F_incPC),.F_hlt(F_hlt), .D_instruction(D_instruction), .D_incPC(D_incPC), .D_hlt(D_hlt));
+    F_D_register pipeReg1(.clk(clk), .rst(rst|flush), .wen(~stall), .F_instruction(F_instruction), .F_incPC(F_incPC),.F_hlt(F_hlt), .D_instruction(D_instruction), .D_incPC(D_incPC), .D_hlt(D_hlt));
     
     /*****************************
     ** Instruction Decode Stage **
@@ -101,7 +101,7 @@ module cpu (clk, rst_n, hlt, pc);
 
     // Hazard Detection Unit
     Hazard_Detection HDU(.X_memRead(X_memRead), .D_memWrite(D_memWrite), .X_Rt(X_Rt), .D_Rs(D_Rs), .D_Rt(D_Rt), .X_Rd(X_Rd), .M_Rd(M_Rd), 
-			.stall(stall), .opcode(D_instruction[15:12]), .CC(D_instruction[11:9]), .X_zEn(X_zEn),.X_vEn(X_vEn),.X_nEn(X_nEn));
+			 .exBranch(exBranch), .stall(stall), .opcode(D_instruction[15:12]), .CC(D_instruction[11:9]),.flush(flush), .X_zEn(X_zEn),.X_vEn(X_vEn),.X_nEn(X_nEn));
 
     // determine all the possible immediate inputs to ALU
     assign D_offset = {{11{D_instruction[3]}}, D_instruction[3:0], 1'b0};

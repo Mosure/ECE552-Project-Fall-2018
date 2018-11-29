@@ -4,6 +4,8 @@ input X_memRead, D_memWrite,X_zEn,X_vEn,X_nEn;
 input[3:0] X_Rt, D_Rs, D_Rt, X_Rd, M_Rd;
 input[3:0] opcode;
 input[2:0] CC;
+input exBranch;
+output flush;
 output stall;
 
 wire Op1_dep, Op2_dep, Flag_dep, BReg_dep;

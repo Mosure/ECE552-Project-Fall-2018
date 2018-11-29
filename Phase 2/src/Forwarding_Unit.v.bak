@@ -29,10 +29,10 @@ output MMforward;
 wire exA, exB, memA, memB;
 
 assign exA = (M_regWrite) && (M_Rd != 4'h0) && (M_Rd == X_Rs);
-assign exB = (M_regWrite) && (M_Rd != 4'h0) && (M_Rd == X_Rt) && (X_ALUsrc[1] != 1'b1);
+assign exB = (M_regWrite) && (M_Rd != 4'h0) && (M_Rd == X_Rt) && (X_ALUsrc != 2'b11);
 
 assign memA = (W_regWrite) && (W_Rd != 4'h0) && (W_Rd == X_Rs);
-assign memB = (W_regWrite) && (W_Rd != 4'h0) && (W_Rd == X_Rt) && (X_ALUsrc[1] != 1'b1);
+assign memB = (W_regWrite) && (W_Rd != 4'h0) && (W_Rd == X_Rt) && (X_ALUsrc != 2'b11);
 
 assign forwardA = exA ? 2'b01 :											// Preference to EX-EX forwarding
 				  memA ? 2'b10 : 2'b00;
