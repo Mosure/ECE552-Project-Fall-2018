@@ -19,11 +19,9 @@ module cache_queue(clk, rst, iMemValid, iMemDataOut, iMemDataIn, iMemAddress, iM
     input   [15:0]  iMemAddress;
     input   [15:0]  dMemAddress;
 
-    // Whether or not the cache thinks it should enable memory
     input           iMemEnable;
     input           dMemEnable;
 
-    // Whether or not the cache thinks it should write to memory
     input           iMemWrite; // This will never be true so writes can only be made from dMemCache
     input           dMemWrite;
 
