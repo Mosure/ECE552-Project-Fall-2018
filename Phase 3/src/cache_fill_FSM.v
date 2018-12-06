@@ -1,5 +1,5 @@
 module cache_fill_FSM(clk, rst, miss_detected, miss_address, fsm_busy, write_data_array, 
-        write_tag_array, memory_address, memory_data_valid);
+        write_tag_array, memory_address, memory_data_valid, missStart);
     input clk, rst;           // Standard clock and active-high reset signals
     input miss_detected;        // Asserted when Cache miss occurs
     input memory_data_valid;    // Asserted when data coming from memory is valid
@@ -8,6 +8,7 @@ module cache_fill_FSM(clk, rst, miss_detected, miss_address, fsm_busy, write_dat
     output reg write_tag_array; // Asserted to tell cache to update tag array
     output reg write_data_array;// Asserted to tell cache to update data array
     output[15:0] memory_address;// Address of byte currently being pulled from memory
+    output missStart;
 
     wire state;                 // Output of state flop
     reg nxtState;               // Input of state flop
@@ -28,8 +29,9 @@ module cache_fill_FSM(clk, rst, miss_detected, miss_address, fsm_busy, write_dat
     dff counter[2:0](.clk(clk), .rst(rst), .d(nxtCount[2:0]), .q(count[2:0]), .wen(cnt_en));
     
     inc_3bit inc_count(.in(count), .out(countUp)); 
-    assign nxtCount = miss_detected ? 3'h0 : countUp;
+    assign nxtCount = (!state & nxtState) ? 3'h0 : countUp;
     assign cnt_full = &count; 
+    assign missStart = !state & nxtState;
     
     
     // The memory_address being read from the cache is 2 byte aligned, and is composed of

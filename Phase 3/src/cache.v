@@ -18,6 +18,7 @@ module cache(clk, rst, procDataIn, procDataOut, procAddress, cacheEnable, cacheW
     ////////////////////////////////////
     // Additional Internal Signals ////
     //////////////////////////////////
+    wire missStart;
     
     // Tag Comparison Signals
     wire[5:0] activeTag;        // Tag of the address being processed
@@ -70,7 +71,8 @@ module cache(clk, rst, procDataIn, procDataOut, procAddress, cacheEnable, cacheW
     cache_fill_FSM missHandler(.clk(clk), .rst(rst), .miss_detected(miss_detected), 
                                .miss_address(procAddress), .fsm_busy(stall), 
                                .write_data_array(dataUpdate), .write_tag_array(tagUpdate), 
-                               .memory_address(memAddress), .memory_data_valid(memValid));
+                               .memory_address(memAddress), .memory_data_valid(memValid),
+                               .missStart(missStart));
     
     
     ///////////////////////////////////////////
@@ -100,7 +102,7 @@ module cache(clk, rst, procDataIn, procDataOut, procAddress, cacheEnable, cacheW
        
     // On a miss, block to update is decided by valid and LRU bits,
     // On a hit, block 2 is used if tag2 is hit, else block 1 is used
-    assign blockLSB = miss_detected ? ((!valid0) ? 0 : ((!valid1) ? 1 : LRU1)) : tag1HIT;
+    assign blockLSB = stall ? ((!valid0) ? 0 : ((!valid1) ? 1 : LRU1)) : tag1HIT;
     
     // The active block is just the active set concatenated with the blockLSB
     assign activeBlock = {activeSet, blockLSB};
@@ -121,7 +123,7 @@ module cache(clk, rst, procDataIn, procDataOut, procAddress, cacheEnable, cacheW
     
     // On a miss, word to update is the current word coming from memory
     // On a hit, the active word is the word requested by the instruction
-    assign activeWord = miss_detected ? memWord : procWord;
+    assign activeWord = stall ? memWord : procWord;
     
     // Convert word to one-hot value
     decoder_3_8 wordFinder(.in(activeWord), .out(wordSelect) , .en(1'b1));
@@ -132,7 +134,7 @@ module cache(clk, rst, procDataIn, procDataOut, procAddress, cacheEnable, cacheW
     /////////////////////
 
     // Main memory is only written to when a write hit occurs
-    assign memWrite = cacheEnable & cacheWrite & !miss_detected;
+    assign memWrite = cacheEnable & cacheWrite & !stall;
     
     
     /////////////////////////
@@ -140,8 +142,8 @@ module cache(clk, rst, procDataIn, procDataOut, procAddress, cacheEnable, cacheW
     ///////////////////////
     
     // Main memory is accessed when writing to the cache (since its write through),
-    // or if a miss is being handled and data is being brought up.
-    assign memEnable = (!miss_detected & cacheWrite) | (miss_detected);
+    // or if a miss is being handled and we are ready to request the next word from memory.
+    assign memEnable = (!miss_detected & cacheWrite) | (dataUpdate & !tagUpdate) | (missStart);
     
     
     ///////////////////////////
@@ -150,7 +152,7 @@ module cache(clk, rst, procDataIn, procDataOut, procAddress, cacheEnable, cacheW
     
     // Update data array on a write hit or when fill FSM says a new word
     // from MM is ready
-    assign dataWrite = (cacheWrite & !miss_detected) | dataUpdate;
+    assign dataWrite = (cacheWrite & !stall) | dataUpdate;
     
     
     ////////////////////////////
@@ -159,7 +161,10 @@ module cache(clk, rst, procDataIn, procDataOut, procAddress, cacheEnable, cacheW
     
     // Meta data is updated on every cache hit(LRU bit), and each time a new
     // block is brought into the cache after a miss
-    assign metaWrite = (cacheEnable & !miss_detected) | tagUpdate;
+    //assign metaWrite = (cacheEnable & !miss_detected) | tagUpdate;
+    
+
+    assign metaWrite = (cacheEnable & !stall) | tagUpdate;
     
     
     ///////////////////////////////
@@ -180,7 +185,13 @@ module cache(clk, rst, procDataIn, procDataOut, procAddress, cacheEnable, cacheW
     // Data Array Input Logic ///
     ////////////////////////////
     
-    assign dataArrayIn = miss_detected ? memDataOut : procDataIn;
+    assign arrayDataIn = stall ? memDataOut : procDataIn;
+    
+    //////////////////////////////
+    // MM Data Input Logic //////
+    ////////////////////////////
+    
+    assign memDataIn = procDataIn;
     
 endmodule
     
