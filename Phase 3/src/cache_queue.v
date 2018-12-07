@@ -38,7 +38,7 @@ module cache_queue(clk, rst, iMemValid, iMemDataOut, iMemDataIn, iMemAddress, iM
 
     dff stateFlop(.clk(clk), .rst(rst), .d(next_state), .q(state), .wen(1'b1));
 
-    assign next_state = (state) ? ((data_valid) ? 1'b0 : 1'b1) : ((iMemEnable | dMemEnable) ? 1'b1 : 1'b0);
+    assign next_state = (state) ? ((data_valid) ? 1'b0 : 1'b1) : ((mem_write) ? 1'b0 : ((iMemEnable | dMemEnable) ? 1'b1 : 1'b0));
 
     assign enable = (mem_write) ? 1'b1 : (~state & (iMemEnable | dMemEnable));
 
