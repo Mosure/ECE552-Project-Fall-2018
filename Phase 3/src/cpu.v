@@ -24,7 +24,6 @@ module cpu (clk, rst_n, hlt, pc);
     wire[1:0] D_ALUsrc, D_writeSelect;
     wire[3:0] D_ALUOp, D_Rs, D_Rt, D_Rd;
     wire[15:0] D_regData1, D_regData2;
-    wire stall;
 
     // EX Phase signals
     wire[1:0] forwardA, forwardB;
@@ -40,7 +39,7 @@ module cpu (clk, rst_n, hlt, pc);
     
     // MEM Phase signals
     wire[15:0] DMEM_In;
-    wire M_regWrite, M_memWrite, M_hlt;
+    wire M_regWrite, M_memRead, M_memWrite, M_hlt;
     wire[1:0] M_writeSelect;
     wire[3:0] M_Rs, M_Rt, M_Rd;
     wire[15:0] M_regData2, M_ALUOut, M_incPC, M_DMemOut;
@@ -51,10 +50,30 @@ module cpu (clk, rst_n, hlt, pc);
     wire[1:0] W_writeSelect;
     wire[3:0] W_Rs, W_Rt, W_Rd;
     wire[15:0] W_DMemOut, W_incPC, W_ALUOut;
-
-    
+	
+	// Signals between cache and Main Memory
+	wire I_MM_write, D_MM_write;	
+	wire I_MM_Enable, D_MM_Enable;
+	wire[15:0] I_MM_data_in, D_MM_data_in;
+	wire[15:0] I_MM_address, D_MM_address;
+	wire[15:0] I_MM_data_out, D_MM_data_out;
+	wire I_MM_valid, D_MM_valid;
+	wire I_filling, D_filling;
+	
+	// Stall signals
+	wire stall; 							// Load-to-use stall
+	wire I_stall;							// Stall due to I-cache miss
+	wire D_stall; 							// Stall due to D-cache miss
+	
     // Convert active low reset to active high reset
     assign rst = ~rst_n;
+	
+	/****************************
+	** Multicycle Main Memory ***
+	****************************/
+	
+	memory4c Main_Mem(.clk(clk), .rst(rst), .enable(MM_Enable), .wr(MM_write), .data_in(MM_data_in),
+					  .addr(MM_addr), .data_out(MM_data_out), .data_valid(MM_data_valid));
 
     /****************************
     ** Instruction Fetch Stage **
@@ -66,17 +85,22 @@ module cpu (clk, rst_n, hlt, pc);
     
     // PC register stores the current pc
     // Don't write to PC if hlt in the IF stage
-    PCregister PC(.clk(clk), .rst(rst), .wen(~F_hlt & ~stall), .nextPC(next_pc), .PC(pc));
+	// Freeze the PC if any kind of stall is asserted
+    PCregister PC(.clk(clk), .rst(rst), .wen(~F_hlt & ~stall & ~I_stall & ~D_stall), .nextPC(next_pc), .PC(pc));
     
-    // Instruction Memory
-    memory1c IMEM(.clk(clk), .rst(rst), .data_in(16'hzzzz), .addr(pc), .enable(1'b1), .wr(1'b0),  .data_out(F_instruction));
+    // Instruction Cache
+    cache Icache(.clk(clk), .rst(rst), .procDataIn(16'hzzzz), .procDataOut(F_instruction), .procAddress(pc), .cacheEnable(1'b1), .cacheWrite(1'b0),
+				 .stall(I_filling), .memDataIn(I_MM_data_in), .memDataOut(I_MM_data_out), .memEnable(I_MM_Enable), .memWrite(I_MM_write), .memValid(I_MM_valid), 
+				 .memAddress(I_MM_address));
     
     // PC Incrementer
     cla_16bit PCinc(.a(pc), .b(16'h0002), .cin(1'b0), .sum(F_incPC), .cout());
     
-    // IF/ID pipeline register : Write enable condition is ~stall. Freeze the contents of the register if stall is asserted
-    // Flush the IF register if branch is taken
-    F_D_register pipeReg1(.clk(clk), .rst(rst|exBranch), .wen(~stall), .F_instruction(F_instruction), .F_incPC(F_incPC),.F_hlt(F_hlt), .D_instruction(D_instruction), .D_incPC(D_incPC), .D_hlt(D_hlt));
+    // IF/ID pipeline register :  
+	// Freeze the contents of the register if stall or D_stall is asserted
+    // Flush the IF register if branch is taken 
+	// Insert nop if I_stall is asserted
+    F_D_register pipeReg1(.clk(clk), .rst(rst|exBranch|I_stall), .wen(~stall & ~D_stall), .F_instruction(F_instruction), .F_incPC(F_incPC),.F_hlt(F_hlt), .D_instruction(D_instruction), .D_incPC(D_incPC), .D_hlt(D_hlt));
     
     /*****************************
     ** Instruction Decode Stage **
@@ -92,8 +116,7 @@ module cpu (clk, rst_n, hlt, pc);
     RegisterFile registers(.clk(clk), .rst(rst), .SrcReg1(D_Rs), .SrcReg2(D_Rt), .DstReg(W_Rd),
                             .WriteReg(W_regWrite), .DstData(DstData), .SrcData1(D_regData1), .SrcData2(D_regData2));
 
-
-    dff U_dff0_rst(.q(rst_d), .d(rst), .wen(1'b1), .clk(clk), .rst(1'b0));
+	 dff U_dff0_rst(.q(rst_d), .d(rst), .wen(1'b1), .clk(clk), .rst(1'b0));						
     // Global Control Logic
     Control GlobalControl(.rst(rst_d), .Op(D_instruction[15:12]), .RegRead(RegRead), .RegWrite(D_regWrite), .MemRead(D_memRead), .MemWrite(D_memWrite), .ALUSrc(D_ALUsrc),
                             .Branch(Branch), .WriteSelect(D_writeSelect), .ALUOp(D_ALUOp), .zEn(D_zEn), .vEn(D_vEn), .nEn(D_nEn));
@@ -110,8 +133,10 @@ module cpu (clk, rst_n, hlt, pc);
     assign D_shamt  = {12'h000, D_instruction[3:0]};
     assign D_loadByte = {8'h00, D_instruction};
     
-    // ID/EX pipeline register : reset condition is rst|stall. Insert nop if stall is asserted.
-    D_X_register pipeReg2(.clk(clk), .rst(rst|stall), .wen(1'b1), .D_regWrite(D_regWrite), .D_memRead(D_memRead), .D_memWrite(D_memWrite), .D_writeSelect(D_writeSelect),
+    // ID/EX pipeline register : 
+	// Insert nop if stall is asserted.
+	// Freeze the contents if D_stall is asserted.
+    D_X_register pipeReg2(.clk(clk), .rst(rst|stall), .wen(~D_stall), .D_regWrite(D_regWrite), .D_memRead(D_memRead), .D_memWrite(D_memWrite), .D_writeSelect(D_writeSelect),
                     .D_zEn(D_zEn), .D_vEn(D_vEn), .D_nEn(D_nEn), .D_hlt(D_hlt), .D_ALUsrc(D_ALUsrc), .D_ALUOp(D_ALUOp), .D_Rs(D_Rs), .D_Rt(D_Rt),
                     .D_Rd(D_Rd), .D_offset(D_offset), .D_shamt(D_shamt), .D_loadByte(D_loadByte), .D_regData1(D_regData1), .D_regData2(D_regData2), .D_PC(D_incPC), .X_regWrite(X_regWrite),
                     .X_memRead(X_memRead), .X_memWrite(X_memWrite), .X_writeSelect(X_writeSelect), .X_zEn(X_zEn), .X_vEn(X_vEn), .X_nEn(X_nEn), .X_hlt(X_hlt), .X_ALUsrc(X_ALUsrc),
@@ -147,10 +172,11 @@ module cpu (clk, rst_n, hlt, pc);
     // Flag Order is ZVN
     FlagRegisters flags(.clk(clk), .rst(rst), .FlagIn(FlagIn), .zEn(X_zEn), .vEn(X_vEn), .nEn(X_nEn), .FlagOut(Flag));
     
-    // EX/MEM pipeline register
-    X_M_register pipeReg3(.clk(clk), .rst(rst), .wen(1'b1), .X_regWrite(X_regWrite),.X_memRead(X_memRead), .X_memWrite(X_memWrite), .X_hlt(X_hlt), 
+    // EX/MEM pipeline register :
+	// Freeze contents if D_stall is asserted
+    X_M_register pipeReg3(.clk(clk), .rst(rst), .wen(~D_stall), .X_regWrite(X_regWrite), .X_memRead(X_memRead), .X_memWrite(X_memWrite), .X_hlt(X_hlt), 
                     .X_writeSelect(X_writeSelect), .X_Rs(X_Rs), .X_Rt(X_Rt), .X_Rd(X_Rd), .X_regData2(X_regData2),
-                    .X_aluOut(X_ALUOut), .X_PC(X_incPC),.M_memRead(M_memRead), .M_regWrite(M_regWrite), .M_memWrite(M_memWrite), .M_hlt(M_hlt),
+                    .X_aluOut(X_ALUOut), .X_PC(X_incPC), .M_regWrite(M_regWrite), .M_memRead(M_memRead), .M_memWrite(M_memWrite), .M_hlt(M_hlt),
                     .M_writeSelect(M_writeSelect), .M_Rs(M_Rs), .M_Rt(M_Rt), .M_Rd(M_Rd), .M_regData2(M_regData2),
                     .M_aluOut(M_ALUOut), .M_PC(M_incPC));
                     
@@ -162,11 +188,14 @@ module cpu (clk, rst_n, hlt, pc);
     // MEM_MEM Forwarding MUX
     assign DMEM_In = MMforward ? DstData : M_regData2; 
 
-    // Data Memory
-    memory1c DMEM(.clk(clk), .rst(rst), .data_in(DMEM_In), .addr(M_ALUOut), .enable(M_memWrite| M_memRead), .wr(M_memWrite), .data_out(M_DMemOut));
+    // Data Cache
+    cache Dcache(.clk(clk), .rst(rst), .procDataIn(DMEM_In), .procDataOut(M_DMemOut), .procAddress(M_ALUOut), .cacheEnable(M_memRead|M_memWrite),
+				 .cacheWrite(M_memWrite), .stall(D_filling), .memDataIn(D_MM_data_in), .memDataOut(D_MM_data_out), .memEnable(D_MM_Enable), 
+				 .memWrite(D_MM_write), .memValid(D_MM_valid), .memAddress(D_MM_address));
     
-    // MEM/WB pipeline register
-    M_W_register pipeReg4(.clk(clk), .rst(rst), .wen(1'b1), .M_regWrite(M_regWrite), .M_hlt(M_hlt), .M_writeSelect(M_writeSelect), .M_Rs(M_Rs),
+    // MEM/WB pipeline register :
+	// Insert nop if D_stall is asserted
+    M_W_register pipeReg4(.clk(clk), .rst(rst|D_stall), .wen(1'b1), .M_regWrite(M_regWrite), .M_hlt(M_hlt), .M_writeSelect(M_writeSelect), .M_Rs(M_Rs),
                     .M_Rt(M_Rt), .M_Rd(M_Rd), .M_ALUOut(M_ALUOut), .M_DMemOut(M_DMemOut), .M_PC(M_incPC), .W_regWrite(W_regWrite), .W_hlt(W_hlt),
                     .W_writeSelect(W_writeSelect), .W_Rs(W_Rs), .W_Rt(W_Rt), .W_Rd(W_Rd), .W_ALUOut(W_ALUOut), .W_DMemOut(W_DMemOut), .W_PC(W_incPC));
                     
@@ -182,4 +211,13 @@ module cpu (clk, rst_n, hlt, pc);
 
     assign hlt = W_hlt;
     
+	/***********************
+	***** Main Memory ******
+	***********************/
+	
+	Main_Mem MM(.clk(clk), .rst(rst), .I_MM_write(I_MM_write), .D_MM_write(D_MM_write), .I_MM_Enable(I_MM_Enable) , .D_MM_Enable(D_MM_Enable), 
+				.I_MM_data_in(I_MM_data_in), .D_MM_data_in(D_MM_data_in), .I_MM_address(I_MM_address), .D_MM_address(D_MM_address), 
+				.I_filling(I_filling), .D_filling(D_filling), .I_MM_data_out(I_MM_data_out), .D_MM_data_out(D_MM_data_out), 
+				.I_MM_valid(I_MM_valid), .D_MM_valid(D_MM_valid), .I_stall(I_stall), .D_stall(D_stall));
+	
 endmodule

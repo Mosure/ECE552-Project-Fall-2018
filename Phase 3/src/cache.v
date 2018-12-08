@@ -194,4 +194,3 @@ module cache(clk, rst, procDataIn, procDataOut, procAddress, cacheEnable, cacheW
     assign memDataIn = procDataIn;
     
 endmodule
-    
