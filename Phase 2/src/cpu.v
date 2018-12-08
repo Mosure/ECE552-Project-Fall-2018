@@ -3,7 +3,7 @@ module cpu (clk, rst_n, hlt, pc);
     output hlt;
     output[15:0] pc;
 
-    wire rst;
+    wire rst, rst_d;
     
     // IF Phase signals
     wire[15:0] F_instruction;
@@ -92,8 +92,10 @@ module cpu (clk, rst_n, hlt, pc);
     RegisterFile registers(.clk(clk), .rst(rst), .SrcReg1(D_Rs), .SrcReg2(D_Rt), .DstReg(W_Rd),
                             .WriteReg(W_regWrite), .DstData(DstData), .SrcData1(D_regData1), .SrcData2(D_regData2));
 
+
+    dff U_dff0_rst(.q(rst_d), .d(rst), .wen(1'b1), .clk(clk), .rst(1'b0));
     // Global Control Logic
-    Control GlobalControl(.Op(D_instruction[15:12]), .RegRead(RegRead), .RegWrite(D_regWrite), .MemRead(D_memRead), .MemWrite(D_memWrite), .ALUSrc(D_ALUsrc),
+    Control GlobalControl(.rst(rst_d), .Op(D_instruction[15:12]), .RegRead(RegRead), .RegWrite(D_regWrite), .MemRead(D_memRead), .MemWrite(D_memWrite), .ALUSrc(D_ALUsrc),
                             .Branch(Branch), .WriteSelect(D_writeSelect), .ALUOp(D_ALUOp), .zEn(D_zEn), .vEn(D_vEn), .nEn(D_nEn));
                             
     // PC Control Logic
@@ -146,9 +148,9 @@ module cpu (clk, rst_n, hlt, pc);
     FlagRegisters flags(.clk(clk), .rst(rst), .FlagIn(FlagIn), .zEn(X_zEn), .vEn(X_vEn), .nEn(X_nEn), .FlagOut(Flag));
     
     // EX/MEM pipeline register
-    X_M_register pipeReg3(.clk(clk), .rst(rst), .wen(1'b1), .X_regWrite(X_regWrite), .X_memWrite(X_memWrite), .X_hlt(X_hlt), 
+    X_M_register pipeReg3(.clk(clk), .rst(rst), .wen(1'b1), .X_regWrite(X_regWrite),.X_memRead(X_memRead), .X_memWrite(X_memWrite), .X_hlt(X_hlt), 
                     .X_writeSelect(X_writeSelect), .X_Rs(X_Rs), .X_Rt(X_Rt), .X_Rd(X_Rd), .X_regData2(X_regData2),
-                    .X_aluOut(X_ALUOut), .X_PC(X_incPC), .M_regWrite(M_regWrite), .M_memWrite(M_memWrite), .M_hlt(M_hlt),
+                    .X_aluOut(X_ALUOut), .X_PC(X_incPC),.M_memRead(M_memRead), .M_regWrite(M_regWrite), .M_memWrite(M_memWrite), .M_hlt(M_hlt),
                     .M_writeSelect(M_writeSelect), .M_Rs(M_Rs), .M_Rt(M_Rt), .M_Rd(M_Rd), .M_regData2(M_regData2),
                     .M_aluOut(M_ALUOut), .M_PC(M_incPC));
                     
@@ -161,7 +163,7 @@ module cpu (clk, rst_n, hlt, pc);
     assign DMEM_In = MMforward ? DstData : M_regData2; 
 
     // Data Memory
-    memory1c DMEM(.clk(clk), .rst(rst), .data_in(DMEM_In), .addr(M_ALUOut), .enable(1'b1), .wr(M_memWrite), .data_out(M_DMemOut));
+    memory1c DMEM(.clk(clk), .rst(rst), .data_in(DMEM_In), .addr(M_ALUOut), .enable(M_memWrite| M_memRead), .wr(M_memWrite), .data_out(M_DMemOut));
     
     // MEM/WB pipeline register
     M_W_register pipeReg4(.clk(clk), .rst(rst), .wen(1'b1), .M_regWrite(M_regWrite), .M_hlt(M_hlt), .M_writeSelect(M_writeSelect), .M_Rs(M_Rs),
@@ -176,7 +178,7 @@ module cpu (clk, rst_n, hlt, pc);
     assign DstData = (W_writeSelect == 2'b00) ? W_ALUOut :
                      (W_writeSelect == 2'b01) ? W_DMemOut :
                      (W_writeSelect == 2'b10) ? W_incPC : 
-                                              16'h0000;  
+                                              W_ALUOut;  
 
     assign hlt = W_hlt;
     

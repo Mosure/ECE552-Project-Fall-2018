@@ -1,5 +1,5 @@
-module X_M_register(clk, rst, wen, X_regWrite, X_memRead, X_memWrite, X_hlt, X_writeSelect, X_Rs, X_Rt, X_Rd, X_regData2, 
-                    X_aluOut, X_PC, M_regWrite, M_memRead, M_memWrite, M_hlt, M_writeSelect, M_Rs, M_Rt, M_Rd, M_regData2, M_aluOut, M_PC);
+module X_M_register(clk, rst, wen, X_regWrite, X_memRead, X_memWrite X_hlt, X_writeSelect, X_Rs, X_Rt, X_Rd, X_regData2, 
+                    X_aluOut, X_PC, M_regWrite,M_memRead, M_memWrite, M_hlt, M_writeSelect, M_Rs, M_Rt, M_Rd, M_regData2, M_aluOut, M_PC);
     input clk, rst, wen;
     input X_regWrite,X_memRead, X_memWrite, X_hlt;
     input[1:0] X_writeSelect;
