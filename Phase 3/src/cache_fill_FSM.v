@@ -39,7 +39,7 @@ module cache_fill_FSM(clk, rst, miss_detected, miss_address, fsm_busy, write_dat
     // The memory_address being read from the cache is 2 byte aligned, and is composed of
     // the first 12 bit of the miss_address concatenated with the count
     assign block_address = miss_detected ? miss_address[15:4] : block_address;                                   
-    assign memory_address = {block_address, count[2:0], 1'b0};
+    assign memory_address = fsm_busy ? {block_address, count[2:0], 1'b0} : miss_address;
           
 
     // Finite State Machine Logic

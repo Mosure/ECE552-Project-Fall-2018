@@ -8,31 +8,21 @@ input[15:0] I_MM_data_in, D_MM_data_in;
 input[15:0] I_MM_address, D_MM_address;
 input I_filling, D_filling;
 
-output reg[15:0] I_MM_data_out, D_MM_data_out;					
-output reg I_MM_valid, D_MM_valid;
+output[15:0] I_MM_data_out, D_MM_data_out;					
+output I_MM_valid, D_MM_valid;
 
-output reg I_stall, D_stall;
+output I_stall, D_stall;
 
 wire[15:0] MM_data_out;
 wire MM_valid;
-reg MM_Enable, MM_write;
-reg[15:0] MM_address, MM_data_in;
+wire MM_Enable, MM_write;
+wire[15:0] MM_address, MM_data_in;
+wire[15:0] D_store_addr;
+wire[15:0] D_store_data;
+wire D_store_write;
+wire D_waiting;
+wire I_busy, I_busy_prev;
 
-reg waiting;											// Asserted when one cache is waiting while other's request is being handled 
-wire waiting1;
-wire posedge_wait;
-reg I_en, D_en;
-wire[15:0] I_store_add, D_store_add;
-
-reg[1:0] nxt_state;
-wire[1:0] state;
-
-/**************************************
-**** Edge detector for waiting ********
-**************************************/
-
-dff edge_detect(.clk(clk), .rst(rst), .q(waiting1), .d(waiting), .wen(1'b1));
-assign posedge_wait = waiting & ~waiting1;
 
 /**************************************
 ******* Instantiate Main Memory *******
@@ -41,117 +31,51 @@ assign posedge_wait = waiting & ~waiting1;
 memory4c iMM(.clk(clk), .rst(rst), .enable(MM_Enable), .wr(MM_write), .addr(MM_address),
 					  .data_in(MM_data_in), .data_out(MM_data_out), .data_valid(MM_valid));			
 
-// Store addresses
-dff I_add[15:0](.clk(clk), .rst(rst), .q(I_store_add), .d(I_MM_address), .wen(I_en));
-dff D_add[15:0](.clk(clk), .rst(rst), .q(D_store_add), .d(D_MM_address), .wen(D_en));
-					  
-/**************************************
-********** Infer a State flop *********
-**** 00: IDLE *************************
-**** 01: Service the I-cache miss *****
-**** 10: Service the D-cache miss *****
-**** 11: Not valid ********************
-**************************************/
-
-dff stateFlop0(.clk(clk), .rst(rst), .d(nxt_state[0]), .q(state[0]), .wen(1'b1));
-dff stateFlop1(.clk(clk), .rst(rst), .d(nxt_state[1]), .q(state[1]), .wen(1'b1)); 	
-
-/**************************************
-***** Next state and Output logic *****
-**************************************/
-
-always@(*) begin
-
-	case(state)
-	
-	2'b00:	begin
-				MM_Enable = (I_filling) ? I_MM_Enable :
-							(D_filling) ? D_MM_Enable : 1'b0;
-				MM_write = (I_filling) ? I_MM_write :
-						   (D_filling) ? D_MM_write : 1'b0;
-				MM_address = (I_filling) ? I_MM_address :
-							 (D_filling) ? D_MM_address : 16'h0000;
-				MM_data_in = (I_filling) ? I_MM_data_in :
-							 (D_filling) ? D_MM_data_in : 16'h0000;
-				nxt_state = (I_filling) ? 2'b01 :								// I-cache given preference over D-cache		
-							(D_filling) ? 2'b10 : 2'b00;
-				waiting = (I_filling & D_filling);								// Both caches are requesting, so I is handled and D is waiting	
-				I_stall = (I_filling) ? 1'b1 : 1'b0;
-				D_stall = (D_filling) ? 1'b1 : 1'b0;
-				I_MM_data_out = (I_filling) ? MM_data_out : 16'h0000;
-				D_MM_data_out = (D_filling) ? MM_data_out : 16'h0000;				
-				I_MM_valid = (I_filling) ? MM_valid : 1'b0;
-				D_MM_valid = (D_filling & ~I_filling) ? MM_valid : 1'b0;
-				I_en = 1'b0;
-				D_en = 1'b0;
-			end
 			
-	2'b01:	begin
-				MM_Enable = (I_filling) ? I_MM_Enable :
-							(waiting) ? 1'b1 : 1'b0;
-				MM_write = (I_filling) ? I_MM_write :
-						   (waiting) ? D_MM_write : 1'b0;
-				MM_address = (I_filling) ? I_MM_address :
-							 (waiting) ? D_store_add : 16'h0000;
-				MM_data_in = (I_filling) ? I_MM_data_in :
-							 (waiting) ? D_MM_data_in : 16'h0000;
-				nxt_state = (I_filling) ? 2'b01 :
-							(waiting) ? 2'b10 : 2'b00;
-				waiting = D_filling;
-				I_stall = (I_filling) ? 1'b1 : 1'b0;
-				D_stall = (waiting) ? 1'b1 : 1'b0;
-				I_MM_data_out = (I_filling) ? MM_data_out : 16'h0000;
-				D_MM_data_out = (I_filling) ? 16'h0000 : 
-								(waiting) ? MM_data_out : 16'h0000;				
-				I_MM_valid = (I_filling) ? MM_valid : 1'b0;
-				D_MM_valid = (I_filling) ? 1'b0 : 
-							(waiting) ? MM_valid : 1'b0;
-				I_en = 1'b0;
-				D_en = posedge_wait;
-			end
-			
-	2'b10:	begin
-				MM_Enable = (D_filling) ? D_MM_Enable :
-							(waiting) ? 1'b1 : 1'b0;
-				MM_write = (D_filling) ? D_MM_write :
-						   (waiting) ? I_MM_write : 1'b0;
-				MM_address = (D_filling) ? D_MM_address :
-							 (waiting) ? I_store_add : 16'h0000;
-				MM_data_in = (D_filling) ? D_MM_data_in :
-							 (waiting) ? I_MM_data_in : 16'h0000;
-				nxt_state = (D_filling) ? 2'b10 :
-							(waiting) ? 2'b01 : 2'b00;
-				waiting = I_filling;
-				I_stall = (waiting) ? 1'b1 : 1'b0;
-				D_stall = (D_filling) ? 1'b1 : 1'b0;
-				D_MM_data_out = (D_filling) ? MM_data_out : 16'h0000;
-				I_MM_data_out = (D_filling) ? 16'h0000 : 
-								(waiting) ? MM_data_out : 16'h0000;				
-				D_MM_valid = (D_filling) ? MM_valid : 1'b0;
-				I_MM_valid = (D_filling) ? 1'b0 : 
-							(waiting) ? MM_valid : 1'b0;
-				I_en = posedge_wait;
-				D_en = 1'b0;
-			end
-			
-	default:begin
-				MM_Enable = 1'b0;
-				MM_write = 1'b0;
-				MM_address = 16'h0000;
-				MM_data_in = 16'h0000;
-				nxt_state = 2'b00;
-				waiting = 1'b0;
-				I_stall = 1'b0;
-				D_stall = 1'b1;
-				D_MM_data_out = 16'h0000;
-				I_MM_data_out = 16'h0000;
-				D_MM_valid = 1'b0;
-				I_MM_valid = 1'b0;	
-				I_en = 1'b0;
-				D_en = 1'b0;
-			end
-
-	endcase
-end	
+    assign I_stall = I_filling;
+    assign D_stall = D_filling;
+            
+	assign I_busy = I_filling;
+    assign D_busy = D_filling;
+    dff negEdgeI(.d(I_busy), .q(I_busy_prev), .clk(clk), .rst(rst), .wen(1'b1));
+    
+    
+    // If I is stalling, MM will enable whenever I sends a request.
+    // If I finishes and D has been waiting, a D request needs to be resent.
+    // Otherwise, just pay attention to D_enable
+    assign MM_Enable = I_busy ? I_MM_Enable : ((!I_busy & I_busy_prev & D_waiting) ? 1'b1 : D_MM_Enable);
+    
+    // If I is stalling, MM will use whatever I wants to handle a miss.
+    // If I finishes and D has been waiting, the stored address needs to be
+    // reactivated and sent to MM. Otherwise, just send D_MM_address
+    assign MM_address = I_busy ? I_MM_address : ((!I_busy & I_busy_prev & D_waiting) ? D_store_addr : D_MM_address);
+    
+    // MM_data_out can be directly connected to both caches,
+    // since it will only be accepted when valid is high anyways
+    assign I_MM_data_out = MM_data_out;
+    assign D_MM_data_out = MM_data_out;
+    
+    // I miss takes precedence, so when I is busy, valid reads must be going
+    // to I cache, otherwise they are going to D cache
+    assign I_MM_valid = I_busy ? MM_valid : 1'b0;
+    assign D_MM_valid = !I_busy ? MM_valid : 1'b0;
+   
+    // If a D memory request arrives and the MM is already busy handling an I request, the address and data need
+    // to be saved
+    dff storeDaddr[15:0](.d(D_MM_address), .q(D_store_addr), .clk(clk), .rst(rst), .wen(I_busy & D_MM_Enable));
+    dff storeDdata[15:0](.d(D_MM_data_in), .q(D_store_data), .clk(clk), .rst(rst), .wen(I_busy & D_MM_Enable));
+    
+    // In addition we need to save whether the request was for a write or for a read.
+    dff storeDwrite(.d(D_MM_write), .q(D_store_write), .clk(clk), .rst(rst), .wen(I_busy & D_MM_Enable));
+    
+    // Only D cache can write to memory, so the data in can be directly connected.
+    // However MM_write should only be asserted once an I miss is done being handled
+    assign MM_data_in = (!I_busy & I_busy_prev & D_waiting) ? D_store_data : D_MM_data_in;
+    assign MM_write = (!I_busy & D_MM_write) | (!I_busy & I_busy_prev & D_waiting & D_store_write);
+    
+    // D waiting is asserted when a D request arrives and cache is busy. It will be asserted when I is finished
+    // being handled
+    dff Dwait(.d(~D_waiting), .q(D_waiting), .clk(clk), .rst(rst), .wen((I_busy & D_MM_Enable) | (!I_busy & I_busy_prev & D_waiting)));
+    
 
 endmodule

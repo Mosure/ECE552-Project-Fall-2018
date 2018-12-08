@@ -50,7 +50,7 @@ module memory4c (data_out, data_in, addr, enable, wr, clk, rst, data_valid);
       if (rst) begin
          //load loadfile_all.img
          if (!loaded) begin
-            $readmemh("D:/Acads/ECE 552/Project/Phase 3/ECE552-Project-Fall-2018-master/Phase 3/project-phase3-testcases/loadfile_all4.img", mem);
+            $readmemh("./project-phase3-testcases/loadfile_all4.img", mem);
             loaded = 1;
          end
 

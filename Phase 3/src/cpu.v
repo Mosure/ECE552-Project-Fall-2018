@@ -94,7 +94,7 @@ module cpu (clk, rst_n, hlt, pc);
 	// Freeze the contents of the register if L_stall, B_stall or D_stall is asserted
     // Flush the IF register if branch is taken 
 	// Insert nop if I_stall is asserted but freezing is prioritized if L_stall/B_stall are asserted
-    F_D_register pipeReg1(.clk(clk), .rst(rst|exBranch|(I_stall & ~L_stall & ~B_stall)), .wen(~L_stall & ~B_stall & ~D_stall), 
+    F_D_register pipeReg1(.clk(clk), .rst(rst|exBranch|(I_stall & ~B_stall)), .wen(~L_stall & ~B_stall & ~D_stall), 
 						  .F_instruction(F_instruction), .F_incPC(F_incPC),.F_hlt(F_hlt), .D_instruction(D_instruction), .D_incPC(D_incPC), .D_hlt(D_hlt));
     
     /*****************************
@@ -123,7 +123,7 @@ module cpu (clk, rst_n, hlt, pc);
     BranchControl BC(.C(D_instruction[11:9]), .I(D_instruction[8:0]), .F(Flag), .B(Branch), .regPC(D_regData1), .incPC(D_incPC), .branchPC(branchPC), .exBranch(exBranch), .B_stall(B_stall));
 
     // Hazard Detection Unit
-    Hazard_Detection HDU(.X_memRead(X_memRead), .D_memWrite(D_memWrite), .X_Rt(X_Rt), .D_Rs(D_Rs), .D_Rt(D_Rt), .X_Rd(X_Rd), .M_Rd(M_Rd), .X_ALUSrc(X_ALUsrc),
+    Hazard_Detection HDU(.X_memRead(X_memRead), .D_memWrite(D_memWrite), .X_Rt(X_Rt), .D_Rs(D_Rs), .D_Rt(D_Rt), .X_Rd(X_Rd), .M_Rd(M_Rd), .D_ALUSrc(D_ALUsrc),
 			.B_stall(B_stall), .L_stall(L_stall), .opcode(D_instruction[15:12]), .CC(D_instruction[11:9]), .X_zEn(X_zEn),.X_vEn(X_vEn),.X_nEn(X_nEn));
 
     // determine all the possible immediate inputs to ALU
@@ -134,7 +134,7 @@ module cpu (clk, rst_n, hlt, pc);
     // ID/EX pipeline register : 
 	// Insert nop if stall is asserted.
 	// Freeze the contents if D_stall is asserted.
-    D_X_register pipeReg2(.clk(clk), .rst(rst|L_stall|B_stall), .wen(~D_stall), .D_regWrite(D_regWrite), .D_memRead(D_memRead), .D_memWrite(D_memWrite), .D_writeSelect(D_writeSelect),
+    D_X_register pipeReg2(.clk(clk), .rst(rst|B_stall), .wen(~D_stall & ~L_stall), .D_regWrite(D_regWrite), .D_memRead(D_memRead), .D_memWrite(D_memWrite), .D_writeSelect(D_writeSelect),
                     .D_zEn(D_zEn), .D_vEn(D_vEn), .D_nEn(D_nEn), .D_hlt(D_hlt), .D_ALUsrc(D_ALUsrc), .D_ALUOp(D_ALUOp), .D_Rs(D_Rs), .D_Rt(D_Rt),
                     .D_Rd(D_Rd), .D_offset(D_offset), .D_shamt(D_shamt), .D_loadByte(D_loadByte), .D_regData1(D_regData1), .D_regData2(D_regData2), .D_PC(D_incPC), .X_regWrite(X_regWrite),
                     .X_memRead(X_memRead), .X_memWrite(X_memWrite), .X_writeSelect(X_writeSelect), .X_zEn(X_zEn), .X_vEn(X_vEn), .X_nEn(X_nEn), .X_hlt(X_hlt), .X_ALUsrc(X_ALUsrc),

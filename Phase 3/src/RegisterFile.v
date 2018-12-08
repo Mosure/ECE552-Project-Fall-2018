@@ -42,7 +42,7 @@ module RegisterFile(clk, rst, SrcReg1, SrcReg2, DstReg, WriteReg, DstData, SrcDa
 					.ReadEnable2(ReadEnable2[2]), .Bitline1(RegData1), .Bitline2(RegData2));
 	Register reg1(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[1]), .ReadEnable1(ReadEnable1[1]), 
 					.ReadEnable2(ReadEnable2[1]), .Bitline1(RegData1), .Bitline2(RegData2));
-	Register reg0(.clk(clk), .rst(rst), .D(DstData), .WriteReg(WriteEnable[0]), .ReadEnable1(ReadEnable1[0]), 
+	Register reg0(.clk(clk), .rst(rst), .D(16'h0000), .WriteReg(WriteEnable[0]), .ReadEnable1(ReadEnable1[0]), 
 					.ReadEnable2(ReadEnable2[0]), .Bitline1(RegData1), .Bitline2(RegData2));
 	
 	//Write-before-Read bypassing
