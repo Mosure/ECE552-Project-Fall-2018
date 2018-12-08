@@ -13,7 +13,7 @@ module cpu (clk, rst_n, hlt, pc);
     
     // Branch signals
     wire[15:0] branchPC;
-    wire exBranch;
+    wire exBranch, exBranch_d;
     
     // ID Phase signals
     wire RegRead;
@@ -68,13 +68,6 @@ module cpu (clk, rst_n, hlt, pc);
     // Convert active low reset to active high reset
     assign rst = ~rst_n;
 	
-	/****************************
-	** Multicycle Main Memory ***
-	****************************/
-	
-	memory4c Main_Mem(.clk(clk), .rst(rst), .enable(MM_Enable), .wr(MM_write), .data_in(MM_data_in),
-					  .addr(MM_addr), .data_out(MM_data_out), .data_valid(MM_data_valid));
-
     /****************************
     ** Instruction Fetch Stage **
     ****************************/
@@ -116,9 +109,10 @@ module cpu (clk, rst_n, hlt, pc);
     RegisterFile registers(.clk(clk), .rst(rst), .SrcReg1(D_Rs), .SrcReg2(D_Rt), .DstReg(W_Rd),
                             .WriteReg(W_regWrite), .DstData(DstData), .SrcData1(D_regData1), .SrcData2(D_regData2));
 
-	 dff U_dff0_rst(.q(rst_d), .d(rst), .wen(1'b1), .clk(clk), .rst(1'b0));						
+	dff U_dff0_rst(.q(rst_d), .d(rst), .wen(1'b1), .clk(clk), .rst(1'b0));	
+	dff U_dff0_flush(.q(exBranch_d), .d(exBranch), .wen(1'b1), .clk(clk), .rst(1'b0));	
     // Global Control Logic
-    Control GlobalControl(.rst(rst_d), .Op(D_instruction[15:12]), .RegRead(RegRead), .RegWrite(D_regWrite), .MemRead(D_memRead), .MemWrite(D_memWrite), .ALUSrc(D_ALUsrc),
+    Control GlobalControl(.rst(rst_d), .exBranch_d(exBranch_d), .Op(D_instruction[15:12]), .RegRead(RegRead), .RegWrite(D_regWrite), .MemRead(D_memRead), .MemWrite(D_memWrite), .ALUSrc(D_ALUsrc),
                             .Branch(Branch), .WriteSelect(D_writeSelect), .ALUOp(D_ALUOp), .zEn(D_zEn), .vEn(D_vEn), .nEn(D_nEn));
                             
     // PC Control Logic

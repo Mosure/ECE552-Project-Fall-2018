@@ -27,6 +27,7 @@ module cache(clk, rst, procDataIn, procDataOut, procAddress, cacheEnable, cacheW
     wire[15:0] tagWord;         // The two tags in the active Set
     wire tag1HIT, tag0HIT;      // Flags that are set when a tag is correct
     wire miss_detected;         // Asserted when neither tag hits, i.e. a miss happens
+	wire hit_detected; 			// Asserted when a valid hit is detected
    
     // Components of currently active metaDataArray entry
     wire[5:0] tag0, tag1;       // the two tags
@@ -94,7 +95,7 @@ module cache(clk, rst, procDataIn, procDataOut, procAddress, cacheEnable, cacheW
     assign tag0HIT = (tag0 == activeTag) & valid0;
     
     assign miss_detected = !(tag1HIT | tag0HIT) & cacheEnable;
-    
+    assign hit_detected = (tag1HIT | tag0HIT) & cacheEnable;
     
     //////////////////////////////
     // Block Select Logic  //////

@@ -20,13 +20,14 @@ reg[15:0] MM_address, MM_data_in;
 
 reg waiting;											// Asserted when one cache is waiting while other's request is being handled 
 
-reg[1:0] state, nxt_state;
+reg[1:0] nxt_state;
+wire[1:0] state;
 
 /**************************************
 ******* Instantiate Main Memory *******
 **************************************/
 
-multicycle_memory iMM(.clk(clk), .rst(rst), .enable(MM_Enable), .wr(MM_write), .addr(MM_address),
+memory4c iMM(.clk(clk), .rst(rst), .enable(MM_Enable), .wr(MM_write), .addr(MM_address),
 					  .data_in(MM_data_in), .data_out(MM_data_out), .data_valid(MM_valid));			
 
 /**************************************
@@ -77,8 +78,8 @@ always@(*) begin
 							(waiting) ? 2'b10 : 2'b00;
 				waiting = (I_filling && D_filling);	
 				I_stall = (I_filling) ? 1'b1 : 1'b0;
-				D_stall = (I_filling) ? 1'b0 :
-						  (waiting) ? 1'b1 : 1'b0;
+				D_stall = (waiting) ? 1'b1 : 1'b0;
+						  
 			end
 			
 	2'b10:	begin
@@ -93,8 +94,7 @@ always@(*) begin
 				nxt_state = (D_filling) ? 2'b10 :
 							(waiting) ? 2'b01 : 2'b00;
 				waiting = (I_filling && D_filling);
-				I_stall = (D_filling) ? 1'b0 :
-						  (waiting) ? 1'b1 : 1'b0;
+				I_stall = (waiting) ? 1'b1 : 1'b0;
 				D_stall = (D_filling) ? 1'b1 : 1'b0;
 			end
 			
