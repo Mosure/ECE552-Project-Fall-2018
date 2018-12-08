@@ -57,4 +57,3 @@ module BranchControl(C, I, F, B, regPC, incPC, branchPC, exBranch, B_stall);
     assign branchPC = B[0] ? regPC : offsetPC;
     
 endmodule
-    

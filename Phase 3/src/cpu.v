@@ -91,10 +91,11 @@ module cpu (clk, rst_n, hlt, pc);
     cla_16bit PCinc(.a(pc), .b(16'h0002), .cin(1'b0), .sum(F_incPC), .cout());
     
     // IF/ID pipeline register :  
-	// Freeze the contents of the register if stall or D_stall is asserted
+	// Freeze the contents of the register if L_stall, B_stall or D_stall is asserted
     // Flush the IF register if branch is taken 
-	// Insert nop if I_stall is asserted
-    F_D_register pipeReg1(.clk(clk), .rst(rst|exBranch|I_stall), .wen(~L_stall & ~B_stall & ~D_stall), .F_instruction(F_instruction), .F_incPC(F_incPC),.F_hlt(F_hlt), .D_instruction(D_instruction), .D_incPC(D_incPC), .D_hlt(D_hlt));
+	// Insert nop if I_stall is asserted but freezing is prioritized if L_stall/B_stall are asserted
+    F_D_register pipeReg1(.clk(clk), .rst(rst|exBranch|(I_stall & ~L_stall & ~B_stall)), .wen(~L_stall & ~B_stall & ~D_stall), 
+						  .F_instruction(F_instruction), .F_incPC(F_incPC),.F_hlt(F_hlt), .D_instruction(D_instruction), .D_incPC(D_incPC), .D_hlt(D_hlt));
     
     /*****************************
     ** Instruction Decode Stage **
@@ -122,7 +123,7 @@ module cpu (clk, rst_n, hlt, pc);
     BranchControl BC(.C(D_instruction[11:9]), .I(D_instruction[8:0]), .F(Flag), .B(Branch), .regPC(D_regData1), .incPC(D_incPC), .branchPC(branchPC), .exBranch(exBranch), .B_stall(B_stall));
 
     // Hazard Detection Unit
-    Hazard_Detection HDU(.X_memRead(X_memRead), .D_memWrite(D_memWrite), .X_Rt(X_Rt), .D_Rs(D_Rs), .D_Rt(D_Rt), .X_Rd(X_Rd), .M_Rd(M_Rd), 
+    Hazard_Detection HDU(.X_memRead(X_memRead), .D_memWrite(D_memWrite), .X_Rt(X_Rt), .D_Rs(D_Rs), .D_Rt(D_Rt), .X_Rd(X_Rd), .M_Rd(M_Rd), .X_ALUSrc(X_ALUsrc),
 			.B_stall(B_stall), .L_stall(L_stall), .opcode(D_instruction[15:12]), .CC(D_instruction[11:9]), .X_zEn(X_zEn),.X_vEn(X_vEn),.X_nEn(X_nEn));
 
     // determine all the possible immediate inputs to ALU

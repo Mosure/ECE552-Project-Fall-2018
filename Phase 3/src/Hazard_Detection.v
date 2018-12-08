@@ -1,15 +1,16 @@
-module Hazard_Detection(X_memRead, D_memWrite, X_Rt, D_Rs, D_Rt, X_Rd, M_Rd, B_stall, L_stall, opcode, CC,X_zEn,X_vEn,X_nEn);
+module Hazard_Detection(X_memRead, D_memWrite, X_Rt, D_Rs, D_Rt, X_Rd, M_Rd, X_ALUSrc, B_stall, L_stall, opcode, CC,X_zEn,X_vEn,X_nEn);
 
 input X_memRead, D_memWrite,X_zEn,X_vEn,X_nEn;
 input[3:0] X_Rt, D_Rs, D_Rt, X_Rd, M_Rd;
 input[3:0] opcode;
 input[2:0] CC;
+input[1:0] X_ALUSrc;
 output B_stall, L_stall;
 
 wire Op1_dep, Op2_dep, Flag_dep, BReg_dep;
 
 //// Op1_dep: Load to use dependency on 1st operand i.e. X_Rt = D_Rs ////
-assign Op1_dep = (X_memRead) && (X_Rt != 4'h0) && (X_Rt == D_Rs);
+assign Op1_dep = (X_memRead) && (X_Rt == D_Rs) && (X_ALUSrc[1] | (~X_ALUSrc[1] & (X_Rt != 4'h0)));
 
 //// Op2_dep: Load to use dependency on 2nd operand i.e. X_Rt = D_Rt except ////
 //// the case of LW followed by SW which is solved by MEM-MEM forwarding. /////

@@ -26,4 +26,3 @@ module DCell( input clk,  input rst, input Din, input WriteEnable, input Enable,
 	assign Dout = (Enable) ? q:'bz;
 	dff dffd(.q(q), .d(Din), .wen(Enable & WriteEnable), .clk(clk), .rst(rst));
 endmodule
-
