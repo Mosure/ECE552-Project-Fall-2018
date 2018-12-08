@@ -115,12 +115,12 @@ module cache(clk, rst, procDataIn, procDataOut, procAddress, cacheEnable, cacheW
     //////////////////////////
     // Word Select Logic ////
     ////////////////////////
-    
+       wire[15:0] writeAddress;
     // Word of block that processor is requesting
     assign procWord = procAddress[3:1];
     
     // Word of block the fill FSM is acting on
-    assign memWord = memAddress[3:1];
+    assign memWord = writeAddress[3:1];
     
     // On a miss, word to update is the current word coming from memory
     // On a hit, the active word is the word requested by the instruction
@@ -144,9 +144,10 @@ module cache(clk, rst, procDataIn, procDataOut, procAddress, cacheEnable, cacheW
     
     // Main memory is accessed when writing to the cache (since its write through),
     // or if a miss is being handled and we are ready to request the next word from memory.
-    assign memEnable = (!miss_detected & cacheWrite) | (dataUpdate & !tagUpdate) | (missStart);
+	assign memEnable = (!miss_detected & cacheWrite) | (dataUpdate & !tagUpdate) | (missStart);
     
-    
+ 
+	dff saveAdd[15:0](.d(memAddress), .q(writeAddress), .clk(clk), .rst(rst), .wen(memEnable));
     ///////////////////////////
     // Data Write Logic //////
     /////////////////////////

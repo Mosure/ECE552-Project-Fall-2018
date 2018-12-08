@@ -12,8 +12,8 @@ module cache_fill_FSM(clk, rst, miss_detected, miss_address, fsm_busy, write_dat
 
     wire state;                 // Output of state flop
     reg nxtState;               // Input of state flop
-    wire[2:0] nxtCount, count;  // Input and Output of counter flop, respectively
-    wire[2:0] countUp;          // count + 1
+    wire[3:0] nxtCount, count;  // Input and Output of counter flop, respectively
+    wire[3:0] countUp;          // count + 1
     wire cnt_full;              // Asserted when count == 7
     wire[11:0] block_address;   // first 12 bits of miss address, shared by all bytes being written
     reg cnt_en;                 // enable signal for counter flop
@@ -26,18 +26,20 @@ module cache_fill_FSM(clk, rst, miss_detected, miss_address, fsm_busy, write_dat
     // Counter flop keeps track of number of writes to the cache finished so far, from 0 to 7
     // the count is zeroed when the miss happens, and incremented each time memory_data_valid is asserted
     // cnt_full is set when count == 7
-    dff counter[2:0](.clk(clk), .rst(rst), .d(nxtCount[2:0]), .q(count[2:0]), .wen(cnt_en));
+    dff counter[3:0](.clk(clk), .rst(rst), .d(nxtCount[3:0]), .q(count[3:0]), .wen(cnt_en));
     
-    inc_3bit inc_count(.in(count), .out(countUp)); 
-    assign nxtCount = (!state & nxtState) ? 3'h0 : countUp;
-    assign cnt_full = &count; 
+    inc_3bit inc_count(.in(count[2:0]), .out(countUp[2:0]), .cout(countUp[3])); 
+    assign nxtCount = countUp;
+    assign cnt_full = count[3]; 
+	
+	
     assign missStart = !state & nxtState;
     
     
     // The memory_address being read from the cache is 2 byte aligned, and is composed of
     // the first 12 bit of the miss_address concatenated with the count
     assign block_address = miss_detected ? miss_address[15:4] : block_address;                                   
-    assign memory_address = {block_address, count, 1'b0};
+    assign memory_address = {block_address, count[2:0], 1'b0};
           
 
     // Finite State Machine Logic

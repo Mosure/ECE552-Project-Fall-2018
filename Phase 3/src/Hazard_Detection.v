@@ -1,10 +1,10 @@
-module Hazard_Detection(X_memRead, D_memWrite, X_Rt, D_Rs, D_Rt, X_Rd, M_Rd, stall, opcode, CC,X_zEn,X_vEn,X_nEn);
+module Hazard_Detection(X_memRead, D_memWrite, X_Rt, D_Rs, D_Rt, X_Rd, M_Rd, B_stall, L_stall, opcode, CC,X_zEn,X_vEn,X_nEn);
 
 input X_memRead, D_memWrite,X_zEn,X_vEn,X_nEn;
 input[3:0] X_Rt, D_Rs, D_Rt, X_Rd, M_Rd;
 input[3:0] opcode;
 input[2:0] CC;
-output stall;
+output B_stall, L_stall;
 
 wire Op1_dep, Op2_dep, Flag_dep, BReg_dep;
 
@@ -23,6 +23,7 @@ assign Flag_dep = (opcode[3] & opcode[2] & ~opcode[1] & ~(&CC) & (X_zEn | X_vEn 
 assign BReg_dep = (opcode[3] & opcode[2] & ~opcode[1] & opcode[0] & (D_Rs == X_Rd || D_Rs == M_Rd));
 
 //// Enable stall in any of these cases ////
-assign stall = Op1_dep | Op2_dep | Flag_dep | BReg_dep;
+assign L_stall = Op1_dep | Op2_dep;
+assign B_stall = Flag_dep | BReg_dep;
 
 endmodule

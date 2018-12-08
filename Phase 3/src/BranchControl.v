@@ -1,9 +1,10 @@
-module BranchControl(C, I, F, B, regPC, incPC, branchPC, exBranch);
+module BranchControl(C, I, F, B, regPC, incPC, branchPC, exBranch, B_stall);
     input[2:0] C, F;        // Condition Codes and Flag bits
     input[8:0] I;           // Immediate from Instruction
     input[1:0] B;           // Indicates what kind of instruction to execute
     input[15:0] regPC;      // new PC from register for BR instruction 
     input[15:0] incPC;      // PC of current instruction + 2
+	input B_stall;
     output[15:0] branchPC;  // new PC if branch is taken
     output exBranch;        // 1 if branch should be taken, 0 otherwise
     
@@ -46,7 +47,7 @@ module BranchControl(C, I, F, B, regPC, incPC, branchPC, exBranch);
     end
     
     // Branch will be taken if conditions are met and is Branch instruction
-    assign exBranch = B[1] & takeBranch;
+    assign exBranch = B[1] & takeBranch & ~B_stall;
     
     // Determine PC if offset Branch is performed
     assign I_shifted = {{6{I[8]}}, I, 1'b0};
