@@ -53,7 +53,5 @@ module cache_fill_FSM(clk, rst, miss_detected, miss_address, fsm_busy, write_dat
             4'b1_?_1_1: begin nxtState = 0; fsm_busy = 1; write_tag_array = 1; write_data_array = 1; cnt_en = 0; end // Writes completed, go back to IDLE
             default: begin nxtState = 0; fsm_busy = 0; write_tag_array = 0; write_data_array = 0; cnt_en = 0; end
         endcase
-    
-                    
-    
+      
 endmodule
