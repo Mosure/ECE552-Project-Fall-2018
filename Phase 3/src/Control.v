@@ -1,6 +1,6 @@
-module Control(rst, Op, RegRead, RegWrite, MemRead, MemWrite, zEn, vEn, nEn, ALUSrc, WriteSelect, Branch, ALUOp);
-			   
-	input rst; 
+module Control(rst,exBranch_d, Op, RegRead, RegWrite, MemRead, MemWrite, zEn, vEn, nEn, ALUSrc, WriteSelect, Branch, ALUOp);
+	
+    input rst,exBranch_d;   
     input[3:0] Op;
     output RegRead, RegWrite, MemRead, MemWrite, zEn, vEn, nEn;
     output[1:0] ALUSrc, WriteSelect, Branch;
@@ -10,7 +10,7 @@ module Control(rst, Op, RegRead, RegWrite, MemRead, MemWrite, zEn, vEn, nEn, ALU
     assign RegRead = Op[3] & Op[1];
 
     // RegWrite: 0 for SW, B, BR, HLT, 1 otherwise
-    assign RegWrite = ~rst & ((~Op[3]) | (~Op[2] & ~Op[0]) | (~Op[2] & Op[1]) | (Op[1] & ~Op[0]));
+    assign RegWrite = ~exBranch_d & ~rst & ((~Op[3]) | (~Op[2] & ~Op[0]) | (~Op[2] & Op[1]) | (Op[1] & ~Op[0]));
 
     /* ALUSrc:
         00: regData2                (ADD, SUB, XOR, PADDSB, RED)
@@ -40,8 +40,8 @@ module Control(rst, Op, RegRead, RegWrite, MemRead, MemWrite, zEn, vEn, nEn, ALU
         00: ALUOut
         01: MemOut
         10: next PC */
-    assign WriteSelect[0] = Op[3] & ~Op[1];
-    assign WriteSelect[1] = Op[3] & Op[2];
+    assign WriteSelect[0] = Op[3] & ~Op[1] & ~Op[2] & ~Op[0];
+    assign WriteSelect[1] = Op[3] & Op[2] & Op[1] & ~Op[0];
 
     // MemWrite: 1 for SW, 0 otherwise
     assign MemWrite = Op[3] & ~Op[2] & ~Op[1] & Op[0];
