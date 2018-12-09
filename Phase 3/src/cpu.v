@@ -134,7 +134,7 @@ module cpu (clk, rst_n, hlt, pc);
     // ID/EX pipeline register : 
 	// Insert nop if stall is asserted.
 	// Freeze the contents if D_stall is asserted.
-    D_X_register pipeReg2(.clk(clk), .rst(rst|B_stall), .wen(L_stall ? ~D_stall : 1'b1), .D_regWrite(D_regWrite), .D_memRead(D_memRead), .D_memWrite(D_memWrite), .D_writeSelect(D_writeSelect),
+    D_X_register pipeReg2(.clk(clk), .rst(rst|B_stall|L_stall), .wen(~D_stall), .D_regWrite(D_regWrite), .D_memRead(D_memRead), .D_memWrite(D_memWrite), .D_writeSelect(D_writeSelect),
                     .D_zEn(D_zEn), .D_vEn(D_vEn), .D_nEn(D_nEn), .D_hlt(D_hlt), .D_ALUsrc(D_ALUsrc), .D_ALUOp(D_ALUOp), .D_Rs(D_Rs), .D_Rt(D_Rt),
                     .D_Rd(D_Rd), .D_offset(D_offset), .D_shamt(D_shamt), .D_loadByte(D_loadByte), .D_regData1(D_regData1), .D_regData2(D_regData2), .D_PC(D_incPC), .X_regWrite(X_regWrite),
                     .X_memRead(X_memRead), .X_memWrite(X_memWrite), .X_writeSelect(X_writeSelect), .X_zEn(X_zEn), .X_vEn(X_vEn), .X_nEn(X_nEn), .X_hlt(X_hlt), .X_ALUsrc(X_ALUsrc),
