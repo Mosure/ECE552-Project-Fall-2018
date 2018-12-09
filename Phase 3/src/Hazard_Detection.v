@@ -10,11 +10,11 @@ output B_stall, L_stall;
 wire Op1_dep, Op2_dep, Flag_dep, BReg_dep;
 
 //// Op1_dep: Load to use dependency on 1st operand i.e. X_Rt = D_Rs ////
-  assign Op1_dep = (X_memRead) && (X_Rd == D_Rs) && /*(D_ALUSrc[1] | (~D_ALUSrc[1]*/ (X_Rd != 4'h0);
+  assign Op1_dep = (~opcode[3] & ~opcode[2]) && (X_memRead) && (X_Rd == D_Rs) && /*(D_ALUSrc[1] | (~D_ALUSrc[1]*/ (X_Rd != 4'h0);
 
 //// Op2_dep: Load to use dependency on 2nd operand i.e. X_Rt = D_Rt except ////
 //// the case of LW followed by SW which is solved by MEM-MEM forwarding. /////
-  assign Op2_dep = (X_memRead) && (X_Rd != 4'h0) && (X_Rd == D_Rt) && (~D_memWrite);
+  assign Op2_dep = (~opcode[3] & ~opcode[2]) && (X_memRead) && (X_Rd != 4'h0) && (X_Rd == D_Rt) && (~D_memWrite);
 
 //// Flag_dep: Stall is needed when conditional branch exists,
 //// and flags need to be updated. No stall for unconditional brances
