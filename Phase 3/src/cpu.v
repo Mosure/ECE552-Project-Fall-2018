@@ -173,7 +173,7 @@ module cpu (clk, rst_n, hlt, pc);
     // EX/MEM pipeline register :
 	// Freeze contents if D_stall is asserted
     X_M_register pipeReg3(.clk(clk), .rst(rst), .wen(~D_stall), .X_regWrite(X_regWrite), .X_memRead(X_memRead), .X_memWrite(X_memWrite), .X_hlt(X_hlt), 
-                    .X_writeSelect(X_writeSelect), .X_Rs(X_Rs), .X_Rt(X_Rt), .X_Rd(X_Rd), .X_regData2(X_regData2),
+                    .X_writeSelect(X_writeSelect), .X_Rs(X_Rs), .X_Rt(X_Rt), .X_Rd(X_Rd), .X_regData2((W_regWrite && W_Rd == X_Rt) ? DstData : X_regData2),
                     .X_aluOut(X_ALUOut), .X_PC(X_incPC), .M_regWrite(M_regWrite), .M_memRead(M_memRead), .M_memWrite(M_memWrite), .M_hlt(M_hlt),
                     .M_writeSelect(M_writeSelect), .M_Rs(M_Rs), .M_Rt(M_Rt), .M_Rd(M_Rd), .M_regData2(M_regData2),
                     .M_aluOut(M_ALUOut), .M_PC(M_incPC));
