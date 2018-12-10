@@ -1,0 +1,190 @@
+Cycle           2 LOAD: ADDR: 0x0000 VALUE: 0x0000
+Cycle           6 LOAD: ADDR: 0x0002 VALUE: 0xa18a
+Cycle          10 LOAD: ADDR: 0x0004 VALUE: 0xa680
+Cycle          14 LOAD: ADDR: 0x0006 VALUE: 0xb601
+Cycle          18 LOAD: ADDR: 0x0008 VALUE: 0x9160
+Cycle          22 LOAD: ADDR: 0x000a VALUE: 0xa110
+Cycle          26 LOAD: ADDR: 0x000c VALUE: 0xa270
+Cycle          30 LOAD: ADDR: 0x000e VALUE: 0xa302
+Cycle          39 REG:  1 VALUE: 0x008a
+Cycle          40 REG:  6 VALUE: 0x0080
+Cycle          41 REG:  6 VALUE: 0x0180
+Cycle          41 LOAD: ADDR: 0x0180 VALUE: 0x0000
+Cycle          45 LOAD: ADDR: 0x0182 VALUE: 0xxxxx
+Cycle          49 LOAD: ADDR: 0x0184 VALUE: 0xxxxx
+Cycle          53 LOAD: ADDR: 0x0186 VALUE: 0xxxxx
+Cycle          57 LOAD: ADDR: 0x0188 VALUE: 0xxxxx
+Cycle          61 LOAD: ADDR: 0x018a VALUE: 0xxxxx
+Cycle          65 LOAD: ADDR: 0x018c VALUE: 0xxxxx
+Cycle          69 LOAD: ADDR: 0x018e VALUE: 0xxxxx
+Cycle          74 STORE: ADDR: 0x0180 VALUE: 0x008a
+Cycle          76 REG:  1 VALUE: 0x0010
+Cycle          76 LOAD: ADDR: 0x0010 VALUE: 0x0000
+Cycle          77 REG:  2 VALUE: 0x0070
+Cycle          78 REG:  3 VALUE: 0x0002
+Cycle          80 LOAD: ADDR: 0x0012 VALUE: 0x0223
+Cycle          84 LOAD: ADDR: 0x0014 VALUE: 0x1113
+Cycle          88 LOAD: ADDR: 0x0016 VALUE: 0xc1fc
+Cycle          92 LOAD: ADDR: 0x0018 VALUE: 0xa110
+Cycle          96 LOAD: ADDR: 0x001a VALUE: 0xa270
+Cycle         100 LOAD: ADDR: 0x001c VALUE: 0xa580
+Cycle         104 LOAD: ADDR: 0x001e VALUE: 0x8420
+Cycle         109 LOAD: ADDR: 0x0070 VALUE: 0x0000
+Cycle         113 LOAD: ADDR: 0x0072 VALUE: 0xxxxx
+Cycle         117 LOAD: ADDR: 0x0074 VALUE: 0xxxxx
+Cycle         121 LOAD: ADDR: 0x0076 VALUE: 0xxxxx
+Cycle         125 LOAD: ADDR: 0x0078 VALUE: 0xxxxx
+Cycle         129 LOAD: ADDR: 0x007a VALUE: 0xxxxx
+Cycle         133 LOAD: ADDR: 0x007c VALUE: 0xxxxx
+Cycle         137 LOAD: ADDR: 0x007e VALUE: 0xxxxx
+Cycle         142 STORE: ADDR: 0x0070 VALUE: 0x0010
+Cycle         145 REG:  0 VALUE: 0x0000
+Cycle         146 REG:  2 VALUE: 0x0072
+Cycle         147 REG:  1 VALUE: 0x000e
+Cycle         150 STORE: ADDR: 0x0072 VALUE: 0x000e
+Cycle         152 REG:  2 VALUE: 0x0074
+Cycle         153 REG:  1 VALUE: 0x000c
+Cycle         156 STORE: ADDR: 0x0074 VALUE: 0x000c
+Cycle         158 REG:  2 VALUE: 0x0076
+Cycle         159 REG:  1 VALUE: 0x000a
+Cycle         162 STORE: ADDR: 0x0076 VALUE: 0x000a
+Cycle         164 REG:  2 VALUE: 0x0078
+Cycle         165 REG:  1 VALUE: 0x0008
+Cycle         168 STORE: ADDR: 0x0078 VALUE: 0x0008
+Cycle         170 REG:  2 VALUE: 0x007a
+Cycle         171 REG:  1 VALUE: 0x0006
+Cycle         174 STORE: ADDR: 0x007a VALUE: 0x0006
+Cycle         176 REG:  2 VALUE: 0x007c
+Cycle         177 REG:  1 VALUE: 0x0004
+Cycle         180 STORE: ADDR: 0x007c VALUE: 0x0004
+Cycle         182 REG:  2 VALUE: 0x007e
+Cycle         183 REG:  1 VALUE: 0x0002
+Cycle         186 STORE: ADDR: 0x007e VALUE: 0x0002
+Cycle         188 REG:  2 VALUE: 0x0080
+Cycle         189 REG:  1 VALUE: 0x0000
+Cycle         192 REG:  1 VALUE: 0x0010
+Cycle         193 REG:  2 VALUE: 0x0070
+Cycle         193 LOAD: ADDR: 0x0020 VALUE: 0x0000
+Cycle         194 REG:  5 VALUE: 0x0080
+Cycle         195 REG:  4 VALUE: 0x0010
+Cycle         196 REG:  2 VALUE: 0x0072
+Cycle         197 LOAD: ADDR: 0x0022 VALUE: 0x9450
+Cycle         201 LOAD: ADDR: 0x0024 VALUE: 0x0553
+Cycle         205 LOAD: ADDR: 0x0026 VALUE: 0x1113
+Cycle         209 LOAD: ADDR: 0x0028 VALUE: 0xc1fa
+Cycle         213 LOAD: ADDR: 0x002a VALUE: 0xa110
+Cycle         217 LOAD: ADDR: 0x002c VALUE: 0xa580
+Cycle         221 LOAD: ADDR: 0x002e VALUE: 0x8450
+Cycle         229 LOAD: ADDR: 0x0080 VALUE: 0x0000
+Cycle         233 LOAD: ADDR: 0x0082 VALUE: 0xxxxx
+Cycle         237 LOAD: ADDR: 0x0084 VALUE: 0xxxxx
+Cycle         241 LOAD: ADDR: 0x0086 VALUE: 0xxxxx
+Cycle         245 LOAD: ADDR: 0x0088 VALUE: 0xxxxx
+Cycle         249 LOAD: ADDR: 0x008a VALUE: 0xxxxx
+Cycle         253 LOAD: ADDR: 0x008c VALUE: 0xxxxx
+Cycle         257 LOAD: ADDR: 0x008e VALUE: 0xxxxx
+Cycle         262 STORE: ADDR: 0x0080 VALUE: 0x0010
+Cycle         264 REG:  5 VALUE: 0x0082
+Cycle         265 REG:  1 VALUE: 0x000e
+Cycle         269 REG:  4 VALUE: 0x000e
+Cycle         270 REG:  2 VALUE: 0x0074
+Cycle         270 STORE: ADDR: 0x0082 VALUE: 0x000e
+Cycle         272 REG:  5 VALUE: 0x0084
+Cycle         273 REG:  1 VALUE: 0x000c
+Cycle         277 REG:  4 VALUE: 0x000c
+Cycle         278 REG:  2 VALUE: 0x0076
+Cycle         278 STORE: ADDR: 0x0084 VALUE: 0x000c
+Cycle         280 REG:  5 VALUE: 0x0086
+Cycle         281 REG:  1 VALUE: 0x000a
+Cycle         285 REG:  4 VALUE: 0x000a
+Cycle         286 REG:  2 VALUE: 0x0078
+Cycle         286 STORE: ADDR: 0x0086 VALUE: 0x000a
+Cycle         288 REG:  5 VALUE: 0x0088
+Cycle         289 REG:  1 VALUE: 0x0008
+Cycle         293 REG:  4 VALUE: 0x0008
+Cycle         294 REG:  2 VALUE: 0x007a
+Cycle         294 STORE: ADDR: 0x0088 VALUE: 0x0008
+Cycle         296 REG:  5 VALUE: 0x008a
+Cycle         297 REG:  1 VALUE: 0x0006
+Cycle         301 REG:  4 VALUE: 0x0006
+Cycle         302 REG:  2 VALUE: 0x007c
+Cycle         302 STORE: ADDR: 0x008a VALUE: 0x0006
+Cycle         304 REG:  5 VALUE: 0x008c
+Cycle         305 REG:  1 VALUE: 0x0004
+Cycle         309 REG:  4 VALUE: 0x0004
+Cycle         310 REG:  2 VALUE: 0x007e
+Cycle         310 STORE: ADDR: 0x008c VALUE: 0x0004
+Cycle         312 REG:  5 VALUE: 0x008e
+Cycle         313 REG:  1 VALUE: 0x0002
+Cycle         317 REG:  4 VALUE: 0x0002
+Cycle         318 REG:  2 VALUE: 0x0080
+Cycle         318 STORE: ADDR: 0x008e VALUE: 0x0002
+Cycle         320 REG:  5 VALUE: 0x0090
+Cycle         321 REG:  1 VALUE: 0x0000
+Cycle         324 REG:  1 VALUE: 0x0010
+Cycle         324 LOAD: ADDR: 0x0030 VALUE: 0x0000
+Cycle         325 REG:  5 VALUE: 0x0080
+Cycle         326 REG:  4 VALUE: 0x0010
+Cycle         328 LOAD: ADDR: 0x0032 VALUE: 0xc00d
+Cycle         332 LOAD: ADDR: 0x0034 VALUE: 0x0553
+Cycle         336 LOAD: ADDR: 0x0036 VALUE: 0x1113
+Cycle         340 LOAD: ADDR: 0x0038 VALUE: 0xc1fa
+Cycle         344 LOAD: ADDR: 0x003a VALUE: 0x8260
+Cycle         348 LOAD: ADDR: 0x003c VALUE: 0xa18a
+Cycle         352 LOAD: ADDR: 0x003e VALUE: 0x1012
+Cycle         363 REG:  5 VALUE: 0x0082
+Cycle         364 REG:  1 VALUE: 0x000e
+Cycle         368 REG:  4 VALUE: 0x000e
+Cycle         370 REG:  0 VALUE: 0x0000
+Cycle         373 REG:  5 VALUE: 0x0084
+Cycle         374 REG:  1 VALUE: 0x000c
+Cycle         378 REG:  4 VALUE: 0x000c
+Cycle         380 REG:  0 VALUE: 0x0000
+Cycle         383 REG:  5 VALUE: 0x0086
+Cycle         384 REG:  1 VALUE: 0x000a
+Cycle         388 REG:  4 VALUE: 0x000a
+Cycle         390 REG:  0 VALUE: 0x0000
+Cycle         393 REG:  5 VALUE: 0x0088
+Cycle         394 REG:  1 VALUE: 0x0008
+Cycle         398 REG:  4 VALUE: 0x0008
+Cycle         400 REG:  0 VALUE: 0x0000
+Cycle         403 REG:  5 VALUE: 0x008a
+Cycle         404 REG:  1 VALUE: 0x0006
+Cycle         408 REG:  4 VALUE: 0x0006
+Cycle         410 REG:  0 VALUE: 0x0000
+Cycle         413 REG:  5 VALUE: 0x008c
+Cycle         414 REG:  1 VALUE: 0x0004
+Cycle         418 REG:  4 VALUE: 0x0004
+Cycle         420 REG:  0 VALUE: 0x0000
+Cycle         423 REG:  5 VALUE: 0x008e
+Cycle         424 REG:  1 VALUE: 0x0002
+Cycle         428 REG:  4 VALUE: 0x0002
+Cycle         430 REG:  0 VALUE: 0x0000
+Cycle         433 REG:  5 VALUE: 0x0090
+Cycle         434 REG:  1 VALUE: 0x0000
+Cycle         437 REG:  2 VALUE: 0x008a
+Cycle         437 LOAD: ADDR: 0x0040 VALUE: 0x0000
+Cycle         438 REG:  1 VALUE: 0x008a
+Cycle         439 REG:  0 VALUE: 0x0000
+Cycle         441 LOAD: ADDR: 0x0042 VALUE: 0xa680
+Cycle         445 LOAD: ADDR: 0x0044 VALUE: 0xb600
+Cycle         449 LOAD: ADDR: 0x0046 VALUE: 0x8260
+Cycle         453 LOAD: ADDR: 0x0048 VALUE: 0xa110
+Cycle         457 LOAD: ADDR: 0x004a VALUE: 0x1012
+Cycle         461 LOAD: ADDR: 0x004c VALUE: 0xc205
+Cycle         465 LOAD: ADDR: 0x004e VALUE: 0xa1ff
+Cycle         474 REG:  6 VALUE: 0x0180
+Cycle         475 REG:  6 VALUE: 0x0080
+Cycle         476 REG:  2 VALUE: 0x0010
+Cycle         477 REG:  1 VALUE: 0x0010
+Cycle         478 REG:  0 VALUE: 0x0000
+Cycle         478 LOAD: ADDR: 0x0050 VALUE: 0x0000
+Cycle         482 LOAD: ADDR: 0x0052 VALUE: 0x0bba
+Cycle         486 LOAD: ADDR: 0x0054 VALUE: 0x0bba
+Cycle         490 LOAD: ADDR: 0x0056 VALUE: 0x0bba
+Cycle         494 LOAD: ADDR: 0x0058 VALUE: 0xa1aa
+Cycle         498 LOAD: ADDR: 0x005a VALUE: 0xb1aa
+Cycle         502 LOAD: ADDR: 0x005c VALUE: 0xf000
+Cycle         506 LOAD: ADDR: 0x005e VALUE: 0xxxxx
+Cycle         515 REG:  1 VALUE: 0x00aa
+Cycle         516 REG:  1 VALUE: 0xaaaa
