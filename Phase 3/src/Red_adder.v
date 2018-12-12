@@ -24,8 +24,8 @@ module Red_adder(A, B, Sum);
     assign C2[1] = G2[1] | (P2[1] & C2[0]);
 
     // Extend the intermdiate results;
-    assign ex1 = {3'b000, C1[1], S1};
-    assign ex2 = {3'b000, C2[1], S2};
+    assign ex1 = {{4{C1[1]}}, S1};
+    assign ex2 = {{4{C2[1]}}, S2};
 
     // Add the two sums together
     cla_4bit a5(.A(ex1[3:0]), .B(ex2[3:0]), .Cin(1'b0), .sum(S3[3:0]), .Prop(P3[0]), .Gen(G3[0]));
