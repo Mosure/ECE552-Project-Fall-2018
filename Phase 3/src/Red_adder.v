@@ -24,7 +24,7 @@ module Red_adder(A, B, Sum);
     assign C2[1] = G2[1] | (P2[1] & C2[0]);
 
     // Extend the intermdiate results;
-    assign ex1 = {{4{C1[1]}}, S1};
+   assign ex1 = {{4{C1[1]}}, S1};
     assign ex2 = {{4{C2[1]}}, S2};
 
     // Add the two sums together
@@ -37,7 +37,8 @@ module Red_adder(A, B, Sum);
     assign C3[2] = G3[2] | (P3[2] & C3[1]);
 
     // Get the final answer 
-    assign Sum = {{4{C3[2]}},S3};
+    assign Sum[8:0] = S3[8:0];
+    assign Sum[15:9] =  {7{S3[9]}};
 
 
 endmodule
